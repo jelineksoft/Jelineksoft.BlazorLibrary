@@ -1,0 +1,22 @@
+﻿<label class="jelineksoft-label-margin">
+    <span class="jelineksoft-label">@Text</span>
+    @ChildContent
+</label>
+
+@code {
+    [Parameter] public string Text { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+}
+
+<style>
+    /*showcases the concept, move to site stylesheet, of course*/
+    .jelineksoft-label {        
+        display: inline-block;
+        width: 100%;
+        padding-left: 10px;
+    }
+    .jelineksoft-label-margin {
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+</style>

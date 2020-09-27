@@ -1,0 +1,627 @@
+﻿@using System.Collections
+@using System.Collections.ObjectModel
+@using System.ComponentModel
+@using System.Dynamic
+@using System.Threading
+@implements IDisposable
+<div class="jelineksoft-dropdownlist" @onblur="(() => Console.WriteLine('a'))">
+    <div class="jelineksoft-dropdownlist-label">@Label</div>
+    <div class="jelineksoft-dropdownlist-row">
+        <input @bind-value="@Text" @bind-value:event="oninput"
+                class="jelineksoft-dropdownlist-input"/>
+        @if (ShowButtonBackspace)
+        {
+            var xT = "";
+            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Del))" tabindex="-1">
+                <i class="fa fa-backspace"/>
+            </button>
+        }
+        @if (ShowButtonCut)
+        {
+            var xT = "";
+            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))" tabindex="-1">
+                <i class="fa fa-cut"/>
+            </button>
+        }
+        @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
+        {
+            <button class="jelineksoft-dropdownlist-button" @onclick="OpenDropDownHandler" tabindex="-1">
+                <i class="fa fa-ellipsis-h"/>
+            </button>
+        }
+        @if (KeyboardShowEnter)
+        {
+            var xT = "";
+            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))" tabindex="-1">
+                @if (KeyboardEnterString.Length > 0)
+                {
+                    @KeyboardEnterString
+                }
+                else
+                {
+                    <i class="fa fa-thumbs-up"/>
+                }
+
+            </button>
+        }
+    </div>
+
+    @{
+
+    }
+    <div class="@GetIsOpenClass()">
+        <div class="jelineksoft-dropdownlist-dropdown">
+            @if (ShowKeyboardUI())
+            {
+                <div style="clear: both;"></div>
+                @if (KeyboardCustomKeys.Length > 0)
+                {
+                    <div class="jelineksoft-dropdownlist-keyboard-custom">
+                        @if (KeyboardCustomKeysSeparator.Length != 1)
+                        {
+                            KeyboardCustomKeysSeparator = ",";
+                        }
+                        @foreach (var xT in KeyboardCustomKeys.Split(KeyboardCustomKeysSeparator.ToCharArray()[0]))
+                        {
+                            <button class="jelineksoft-dropdownlist-keyboard-btn-custom"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                @xT
+                            </button>
+                        }
+                    </div>
+                }
+                <div class="jelineksoft-dropdownlist-keyboard">
+                    @if (KeyboardShowNumbers)
+                    {
+                        <div class="jelineksoft-dropdownlist-keyboard-numbers">
+                            @for (int i = 0; i < 10; i++)
+                            {
+                                var xT = i.ToString();
+                                <button class="jelineksoft-dropdownlist-keyboard-btn-number"
+                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                    @xT
+                                </button>
+                            }
+                        </div>
+                    }
+                    <div style="clear: both;"></div>
+                    @if (KeyboardShowAZ)
+                    {
+                        <div class="jelineksoft-dropdownlist-keyboard-alphas">
+                            @for (char c = 'A'; c <= 'Z'; c++)
+                            {
+                                var xT = c.ToString();
+                                <button class="jelineksoft-dropdownlist-keyboard-btn-alpha"
+                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                    @xT
+                                </button>
+                            }
+                        </div>
+                    }
+                    <div class="jelineksoft-dropdownlist-keyboard-system">
+                        @if (KeyboardShowAt)
+                        {
+                            var xT = "@";
+                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                @xT
+                            </button>
+                        }
+                        @if (KeyboardShowDecimal)
+                        {
+                            var xT = ",";
+                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                @xT
+                            </button>
+                        }
+                        @if (KeyboardShowDot)
+                        {
+                            var xT = ".";
+                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                @xT
+                            </button>
+                        }
+                        @if (KeyboardShowSpace)
+                        {
+                            var xT = " SPACE ";
+                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Space))" tabindex="-1">
+                                @xT
+                            </button>
+                        }
+
+                    </div>
+                </div>
+            }
+
+            @HeaderContent
+            <table class="jelineksoft-dropdownlist-table">
+                @if (TableHeaderContent != null)
+                {
+                    <thead class="jelineksoft-dropdownlist-table-header">
+                    <tr>
+                        @TableHeaderContent.Invoke(ItemsFiltered)
+                    </tr>
+                    </thead>
+                }
+                @if (ItemsFiltered != null)
+                {
+                    var xI = 0;
+                    var xClass = "";
+                    foreach (var item in ItemsFiltered)
+                    {
+                        if (xI >= ItemStartIndex)
+                        {
+                            if (xI >= ItemStartIndex + PageSize) break;
+                            if (item == SelectedItem)
+                            {
+                                xClass = "jelineksoft-dropdownlist-table-selecteditem";
+                            }
+                            else
+                            {
+                                xClass = "jelineksoft-dropdownlist-table-row";
+                            }
+                            if (TableRowContent != null)
+                            {
+                                <tr class="@xClass" tabindex="0" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@TableRowContent.Invoke(item)</tr>
+                            }
+                            else
+                            {
+                                <tr class="@xClass" tabindex="0" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@item.ToString()</tr>
+                            }
+                        }
+                        xI++;
+                    }
+                }
+            </table>
+            @{
+                    //Stranky
+                    var x = ((double) ItemsFiltered.Count / (double) PageSize);
+                    var xPgs = (int) Math.Ceiling(x);
+                    if (xPgs > 1)
+                    {
+                        <div class="jelineksoft-dropdownlist-pagesrow">
+                            @for (var xPg = 0; xPg < xPgs; xPg++)
+                            {
+                                var xxPage = (xPg) * PageSize;
+                                <button class="jelineksoft-dropdownlist-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
+                            }
+                        </div>
+                    }
+            }
+            <div>@FooterContent</div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Label { get; set; }
+
+    private string xText = "";
+
+    [Parameter]
+    public string Text
+    {
+        get { return xText; }
+        set
+        {
+            if (xText != value)
+            {
+                xText = value;
+                FilterItems();
+                OnTextChanged.InvokeAsync(xText);
+            }
+        }
+    }
+
+    [Parameter]
+    public bool ShowButtonBackspace { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonCut { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonOpen { get; set; } = true;
+
+    [Parameter]
+    public bool AutoOpenDropdownWhenFocus { get; set; } = false;
+
+    [Parameter]
+    public bool AutoSelectItem { get; set; } = true;
+
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    [Parameter]
+    public bool? KeyboardShow { get; set; } = null;
+
+    [Parameter]
+    public bool KeyboardShowNumbers { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowAZ { get; set; } = false;
+
+    [Parameter]
+    public bool KeyboardShowDecimal { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowDot { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowEnter { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowClear { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowAt { get; set; } = false;
+
+    [Parameter]
+    public bool KeyboardShowSpace { get; set; } = false;
+
+    [Parameter]
+    public string KeyboardEnterString { get; set; } = "OK";
+
+    [Parameter]
+    public string KeyboardClearString { get; set; } = "CLR";
+
+    [Parameter]
+    public string KeyboardCustomKeys { get; set; } = "";
+
+    [Parameter]
+    public string KeyboardCustomKeysSeparator { get; set; } = ",";
+
+    [Parameter]
+    public RenderFragment HeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<object> TableHeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<object> TableRowContent { get; set; }
+
+    [Parameter]
+    public RenderFragment FooterContent { get; set; }
+
+    private IList xItems = null;
+
+    [Parameter]
+    public IList Items
+    {
+        get { return xItems; }
+        set
+        {
+            if (xItems != value)
+            {
+                xItems = value;
+                SelectedItem = null;
+                FilterItems();
+            }
+        }
+    }
+
+    [Parameter]
+    public IList ItemsFiltered { get; set; }
+
+    [Parameter]
+    public Int16 ItemsFilterStartLen { get; set; } = 0;
+
+    private object xSelectedItem = null;
+
+    [Parameter]
+    public object SelectedItem
+    {
+        get { return xSelectedItem; }
+        set
+        {
+            xSelectedItem = value;
+            OnSelectedItemChanged.InvokeAsync(xSelectedItem);
+        }
+    }
+
+    [Parameter]
+    public Func<object, string, bool> FilterItemMethod { get; set; }
+
+    [Parameter]
+    public EventCallback OnKeyEnterClick { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnTextChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnSelectedItemChanged { get; set; }
+
+
+    private int ItemStartIndex { get; set; } = 0;
+
+
+    public bool IsOpen { get; set; } = false;
+
+
+    protected override void OnInitialized()
+    {
+    //Items.CollectionChanged += (sender, args) => { StateHasChanged(); };
+        Console.WriteLine("OnInitialized.");
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        FilterItems();
+        base.OnParametersSet();
+    }
+
+    private string xLastFilteredString = "";
+
+    private void FilterItems()
+    {
+        if ((Text.Length >= ItemsFilterStartLen) && (Items != null))
+        {
+            var xItemsToFilter = Items;
+            if (xLastFilteredString.Length < Text.Length)
+            {
+                if (ItemsFiltered != null)
+                    if (ItemsFiltered.Count > 0)
+                    {
+                        xItemsToFilter = ItemsFiltered;
+                    }
+            }
+            ItemsFiltered = new List<object>();
+            foreach (var item in xItemsToFilter)
+            {
+                bool xAdd = true;
+                if (FilterItemMethod != null)
+                {
+                    xAdd = FilterItemMethod(item, this.Text);
+                }
+                if (xAdd)
+                {
+                    ItemsFiltered.Add(item);
+                }
+                else
+                {
+                    if (SelectedItem == item)
+                    {
+                        SelectedItem = null; //Reset slected item when is not in filtered items
+                    }
+                }
+            }
+            if (AutoSelectItem)
+            {
+                if (ItemsFiltered.Count == 1)
+                {
+                    SelectedItem = ItemsFiltered[0];
+                }
+            }
+            xLastFilteredString = Text;
+        }
+        else
+        {
+            ItemsFiltered = new List<object>();
+            SelectedItem = null;
+            xLastFilteredString = "";
+        }
+    }
+
+    public void SetSelectedItem(object item)
+    {
+        SelectedItem = item;
+    }
+
+    private string GetIsOpenClass()
+    {
+        if (AutoOpenDropdownWhenFocus) return "jelineksoft-dropdownlist-isopen";
+        return (IsOpen ? "jelineksoft-dropdownlist-isopen" : "jelineksoft-dropdownlist-isclose");
+    }
+
+    private bool ShowKeyboardUI()
+    {
+        var xShow = false;
+        if (KeyboardShow.HasValue == false)
+        {
+            xShow = Configuration.ShowKeyboard;
+        }
+        else
+        {
+            xShow = KeyboardShow.Value;
+        }
+        return xShow;
+    }
+
+    private void OpenDropDownHandler()
+    {
+        IsOpen = !IsOpen;
+        StateHasChanged();
+    }
+
+    public enum KeyboardButtonTypeEnum
+    {
+        Default,
+        Enter,
+        Del,
+        Tab,
+        Clear,
+        Space
+    }
+
+    public void KeyboardButtonClick(string keys)
+    {
+        KeyboardButtonClick(keys, KeyboardButtonTypeEnum.Default);
+    }
+
+    public void KeyboardButtonClick(string keys, KeyboardButtonTypeEnum type)
+    {
+        switch (type)
+        {
+            case KeyboardButtonTypeEnum.Clear:
+                this.Text = "";
+                break;
+            case KeyboardButtonTypeEnum.Del:
+                if (this.Text.Length > 0)
+                {
+                    this.Text = this.Text.Substring(0, this.Text.Length - 1);
+                }
+                break;
+            case KeyboardButtonTypeEnum.Enter:
+                OnKeyEnterClick.InvokeAsync(null);
+                break;
+            case KeyboardButtonTypeEnum.Tab:
+    //todo:tab
+                break;
+            case KeyboardButtonTypeEnum.Space:
+                this.Text = this.Text + " ";
+                break;
+            default:
+                this.Text = this.Text + keys;
+                break;
+        }
+    }
+
+    public void Dispose()
+    {
+    }
+
+}
+
+<style>
+    /*showcases the concept, move to site stylesheet, of course*/
+    .jelineksoft-dropdownlist {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        margin: 2px;
+    }
+    .jelineksoft-dropdownlist-row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+    .jelineksoft-dropdownlist-label {
+        clear: both;
+        float: none;
+        display: inline-block;
+        padding: 2px;
+    }
+    .jelineksoft-dropdownlist-input {
+        width: 100%;
+    }
+    .jelineksoft-dropdownlist-button {
+        width:auto;
+    }
+    .jelineksoft-dropdownlist-dropdown {
+         display: none;
+         position: absolute;
+         left: 0;
+         right: 0;
+         min-width: 6em;
+         height: auto;
+         box-shadow: 0px 8px 16px 0px rgba(255,255,255,0.5);
+         z-index: 1;
+         border-color: #4CAF50;
+         border-width: 5px;
+         border-style: double;
+         width: 100%;
+    }
+    .jelineksoft-dropdownlist-isopen {
+        display: block;    
+    }
+    .jelineksoft-dropdownlist-isclose {
+        display: none;    
+    }
+    .jelineksoft-dropdownlist-keyboard {
+        display: flex;
+        flex-direction: column;
+        width: 100%;        
+    }
+    .jelineksoft-dropdownlist-keyboard-numbers {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .jelineksoft-dropdownlist-keyboard-alphas {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .jelineksoft-dropdownlist-keyboard-custom {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .jelineksoft-dropdownlist-pagesrow
+    {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        align-content: center;            
+    }
+.jelineksoft-dropdownlist-keyboard-system {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+    .jelineksoft-dropdownlist-keyboard-btn-number {        
+        width: auto;        
+    }
+    .jelineksoft-dropdownlist-keyboard-btn-alpha {
+        width: auto;    
+    }
+    .jelineksoft-dropdownlist-keyboard-btn-custom {
+        width: auto;    
+    }
+    .jelineksoft-dropdownlist-keyboard-btn-system {
+        width: auto;    
+    }
+    .jelineksoft-dropdownlist-btn-page {
+        width: auto; 
+        border-radius: 40%;   
+    }
+  
+    
+   .jelineksoft-dropdownlist-dropdown:hover .jelineksoft-dropdownlist-dropdown {
+        display: block;
+   }
+   .jelineksoft-dropdownlist:focus-within .jelineksoft-dropdownlist-dropdown {
+        display: block;
+   }
+  .jelineksoft-dropdownlist:focus-within .jelineksoft-dropdownlist-label {
+        font-weight: bold;
+   }
+   
+   .jelineksoft-dropdownlist-table {
+        table-layout: auto;
+        display: block;
+        white-space: nowrap;
+        overflow-x: auto;
+        width: available;
+   }
+      
+   .jelineksoft-dropdownlist-table-selecteditem {
+        font-weight: bold;
+        background-color: whitesmoke;
+        color: black;
+   }
+   .jelineksoft-dropdownlist-table-row {
+   }
+      .jelineksoft-dropdownlist-table-header {
+           font-weight: bold;
+           background-color: rgba(255,255,255,0.2);
+      }
+
+   .table_wrapper{
+       display: block;
+       overflow-x: auto;
+       white-space: nowrap;
+   }
+
+</style>
