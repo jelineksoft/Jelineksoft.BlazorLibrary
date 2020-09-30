@@ -1,0 +1,245 @@
+﻿@jsf-bgcolor: #383838;
+@jsf-bgcolor-header: #515151;
+@jsf-bgcolor-popup: #383838;
+@jsf-color: white;
+@jsf-color-header: white;
+@jsf-color-popup: white;
+@jsf-font0: normal 100% 'Segoe UI';
+@jsf-font1: normal 100% 'JetBrains Mono';
+@jsf-font2: normal 100% 'Verdana';
+@jsf-font-smallxx: 0.4rem;
+@jsf-font-smallx: 0.6rem;
+@jsf-font-small: 0.8rem;
+@jsf-font-normal: 1rem;
+@jsf-font-big: 1.2rem;
+@jsf-font-bigx: 1.5rem;
+@jsf-font-bigxx: 2rem;
+@jsf-font-bigxxx: 3rem;
+@jsf-menu-bgcolor: whitesmoke;
+@jsf-menu-color: #3b739f;
+@jsf-menu-bgcolor-hover: #3b739f;
+@jsf-menu-color-hover: white;
+@jsf-menu-bgcolor-selected: #3b739f;
+@jsf-menu-color-selected: white;
+@jsf-menu-font: normal 1.1rem 'Segoe UI';
+@jsf-btn-font: normal 1.5rem 'Segoe UI';
+@jsf-btn-bgcolor: dodgerblue;
+@jsf-btn-color: white;
+@jsf-btn-bgcolor-hover: royalblue;
+@jsf-btn-bgcolor-disable: #868686;
+@jsf-btn-color-hover: white;
+@jsf-btn-color-disable: #404040;
+@jsf-btn-minheight: 2rem;
+@jsf-btn-minwidth: 2rem;
+@jsf-btn-border: solid 1px #69bfff;
+@jsf-btn-border-hover: dot 1px white;
+@jsf-err-ui-bgcolor: lightcoral;
+@jsf-err-ui-color: black;
+@jsf-err-text-color: red;
+@jsf-err-text-bgcolor: transparent;
+@jsf-err-text-border: solid 1px red;
+@jsf-link-color: #0090ff;
+@jsf-ling-color-hover: #64c6ff;
+@jsf-input-color: black;
+@jsf-input-bgcolor: white;
+@jsf-input-color-focus: black;
+@jsf-input-bgcolor-focus: lightblue;
+@jsf-input-color-disabled: grey;
+@jsf-input-bgcolor-disabled: silver;
+@jsf-input-font: normal 1.1rem 'Segoe UI';
+@jsf-item-color: white;
+@jsf-item-bgcolor: #383838;
+@jsf-item-color-hover: @jsf-btn-color-hover;
+@jsf-item-bgcolor-hover: @jsf-btn-bgcolor-hover;
+@jsf-item-color-selected: white;
+@jsf-item-bgcolor-selected: #467692;
+@jsf-popup-box-shadow: 0px 8px 16px 0px rgba(255,255,255,0.5);
+@jsf-popup-border: solid 2x silver;
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: @jsf-bgcolor;
+  color: @jsf-color;
+  margin: 0;
+  font-size: 100%;
+}
+
+html, body, h1, h2, h3, h4, h5, h6 {
+  font: @jsf-font0;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.7rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.3rem;
+}
+
+h6 {
+  font-size: 1.1rem;
+}
+
+app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: @jsf-link-color;
+  :hover {
+    color: @jsf-ling-color-hover; 
+  }
+}
+
+input {
+  background-color: @jsf-input-bgcolor;
+  color: @jsf-input-color;
+  width: 100%;
+  font: @jsf-input-font;
+  padding: 2px;
+  margin: 2px;
+  :focus {
+    background-color: @jsf-input-bgcolor-focus;
+    color: @jsf-input-color-focus;
+  }
+  :disabled {
+    background-color: @jsf-input-bgcolor-disabled;
+    color: @jsf-input-color-disabled;
+  }
+}
+
+img {
+  border-style:none;
+  outline: 0;
+  :hover {
+    border-style:none;
+    outline: 0;
+  }
+  :active {
+    outline: 0;
+  }
+}
+
+i{
+  border-style:none;
+  tab-index:-1;
+  outline: 0;
+  :hover {
+    border-style:none;
+    outline: 0;
+  }
+  :active {
+    outline: 0;
+  }
+}
+
+select {
+  width: 100%;
+  font: @jsf-input-font;
+  padding: 2px;
+  margin: 2px;
+  background-color: @jsf-item-bgcolor;
+  color: @jsf-item-color;
+  :hover, :focus {
+    background-color: @jsf-item-bgcolor-hover;
+    color: @jsf-item-color-hover;
+  }
+}
+
+
+button {
+  background-color: @jsf-btn-bgcolor;
+  color: @jsf-btn-color;
+  font: @jsf-btn-font;
+  border: @jsf-btn-border;
+  padding: 5px;
+  width: auto;
+  height: auto;
+  margin: 2px;
+  align-content: center;
+  min-height: @jsf-btn-minheight;
+  min-width: @jsf-btn-minwidth;
+
+  &:hover {
+    border: @jsf-btn-border-hover;
+    color: @jsf-btn-color-hover;
+    background-color: @jsf-btn-bgcolor-hover;
+  }
+
+  &:disabled {
+    color: @jsf-btn-color-disable;
+    background-color: @jsf-btn-bgcolor-disable;
+  }
+}
+
+label {
+  display: block;
+}
+
+img {
+  margin: 0;
+}
+
+.jsf-error-text {
+  border: @jsf-err-text-border;
+  margin: 2px;
+  padding: 3px;
+  color: @jsf-err-text-color;
+  background-color: @jsf-err-text-bgcolor;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  clear: both;
+}
+
+.jsf-font-smallxx {
+  font-size: @jsf-font-smallxx;
+}
+
+.jsf-font-smallx {
+  font-size: @jsf-font-smallx;
+}
+
+.jsf-font-small {
+  font-size: @jsf-font-small;
+}
+
+.jsf-font-normal {
+  font-size: @jsf-font-normal;
+}
+
+.jsf-font-big {
+  font-size: @jsf-font-big;
+}
+
+.jsf-font-bigx {
+  font-size: @jsf-font-bigx;
+}
+
+.jsf-font-bigxx {
+  font-size: @jsf-font-bigxx;
+}
+
+.jsf-font-bigxxx {
+  font-size: @jsf-font-bigxxx;
+}
+
+
+

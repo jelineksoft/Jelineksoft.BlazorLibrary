@@ -1,0 +1,138 @@
+﻿@import "jelineksoft.less";
+
+.jelineksoft-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 2px;
+}
+.jelineksoft-input-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.jelineksoft-input-label {
+  clear: both;
+  float: none;
+  display: inline-block;
+  padding: 2px;
+}
+.jelineksoft-input-input {
+  width: 100%;
+}
+.jelineksoft-input-button {
+  width:auto;
+}
+.jelineksoft-input-dropdown {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 6em;
+  height: auto;
+  box-shadow: @jsf-popup-box-shadow;
+  z-index: 1;
+  border: @jsf-popup-border;
+  width: 100%;
+}
+.jelineksoft-input-isopen {
+  display: block;
+}
+.jelineksoft-input-isclose {
+  display: none;
+}
+.jelineksoft-input-keyboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-numbers {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-alphas {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-custom {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-pagesrow
+{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  align-content: center;
+}
+.jelineksoft-input-keyboard-system {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.jelineksoft-input-keyboard-btn-number {
+  width: auto;
+}
+.jelineksoft-input-keyboard-btn-alpha {
+  width: auto;
+}
+.jelineksoft-input-keyboard-btn-custom {
+  width: auto;
+}
+.jelineksoft-input-keyboard-btn-system {
+  width: auto;
+}
+.jelineksoft-input-btn-page {
+  width: auto;
+  border-radius: 40%;
+}
+
+
+.jelineksoft-input-dropdown:hover .jelineksoft-input-dropdown {
+  display: block;
+}
+.jelineksoft-input:focus-within .jelineksoft-input-dropdown {
+  display: block;
+}
+.jelineksoft-input:focus-within .jelineksoft-input-label {
+  font-weight: bold;
+}
+
+.jelineksoft-input-table {
+  table-layout: auto;
+  display: block;
+  white-space: nowrap;
+  overflow-x: auto;
+  width: available;
+}
+
+.jelineksoft-input-table-selecteditem {
+  font-weight: bold;
+  background-color: @jsf-item-bgcolor-selected;
+  color: @jsf-item-color-selected;
+}
+.jelineksoft-input-table-row {
+}
+.jelineksoft-input-table-header {
+  font-weight: bold;
+  background-color: @jsf-bgcolor-header;
+  color: @jsf-color-header;
+}
+.jelineksoft-input-dropdown {
+  background-color: @jsf-bgcolor-popup;
+  color: @jsf-color-popup;
+}
+.table_wrapper{
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}

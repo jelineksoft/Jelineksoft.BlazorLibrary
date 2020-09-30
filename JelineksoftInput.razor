@@ -3,36 +3,37 @@
 @using System.ComponentModel
 @using System.Dynamic
 @using System.Threading
+@using Jelineksoft.BlazorLibrary.Helpers
 @implements IDisposable
-<div class="jelineksoft-dropdownlist" @onblur="(() => Console.WriteLine('a'))">
-    <div class="jelineksoft-dropdownlist-label">@Label</div>
-    <div class="jelineksoft-dropdownlist-row">
+<div class="jelineksoft-input" @onblur="(() => Console.WriteLine('a'))">
+    <div class="jelineksoft-input-label">@Label</div>
+    <div class="jelineksoft-input-row">
         <input @bind-value="@Text" @bind-value:event="oninput"
-                class="jelineksoft-dropdownlist-input"/>
+                class="jelineksoft-input-input"/>
         @if (ShowButtonBackspace)
         {
             var xT = "";
-            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Del))" tabindex="-1">
+            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Del))" tabindex="-1">
                 <i class="fa fa-backspace"/>
             </button>
         }
         @if (ShowButtonCut)
         {
             var xT = "";
-            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))" tabindex="-1">
+            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))" tabindex="-1">
                 <i class="fa fa-cut"/>
             </button>
         }
         @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
         {
-            <button class="jelineksoft-dropdownlist-button" @onclick="OpenDropDownHandler" tabindex="-1">
+            <button class="jelineksoft-input-button" @onclick="OpenDropDownHandler" tabindex="-1">
                 <i class="fa fa-ellipsis-h"/>
             </button>
         }
         @if (KeyboardShowEnter)
         {
             var xT = "";
-            <button class="jelineksoft-dropdownlist-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))" tabindex="-1">
+            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))" tabindex="-1">
                 @if (KeyboardEnterString.Length > 0)
                 {
                     @KeyboardEnterString
@@ -50,34 +51,34 @@
 
     }
     <div class="@GetIsOpenClass()">
-        <div class="jelineksoft-dropdownlist-dropdown">
+        <div class="jelineksoft-input-dropdown">
             @if (ShowKeyboardUI())
             {
                 <div style="clear: both;"></div>
                 @if (KeyboardCustomKeys.Length > 0)
                 {
-                    <div class="jelineksoft-dropdownlist-keyboard-custom">
+                    <div class="jelineksoft-input-keyboard-custom">
                         @if (KeyboardCustomKeysSeparator.Length != 1)
                         {
                             KeyboardCustomKeysSeparator = ",";
                         }
                         @foreach (var xT in KeyboardCustomKeys.Split(KeyboardCustomKeysSeparator.ToCharArray()[0]))
                         {
-                            <button class="jelineksoft-dropdownlist-keyboard-btn-custom"
+                            <button class="jelineksoft-input-keyboard-btn-custom"
                                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                 @xT
                             </button>
                         }
                     </div>
                 }
-                <div class="jelineksoft-dropdownlist-keyboard">
+                <div class="jelineksoft-input-keyboard">
                     @if (KeyboardShowNumbers)
                     {
-                        <div class="jelineksoft-dropdownlist-keyboard-numbers">
+                        <div class="jelineksoft-input-keyboard-numbers">
                             @for (int i = 0; i < 10; i++)
                             {
                                 var xT = i.ToString();
-                                <button class="jelineksoft-dropdownlist-keyboard-btn-number"
+                                <button class="jelineksoft-input-keyboard-btn-number"
                                         @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                     @xT
                                 </button>
@@ -87,22 +88,22 @@
                     <div style="clear: both;"></div>
                     @if (KeyboardShowAZ)
                     {
-                        <div class="jelineksoft-dropdownlist-keyboard-alphas">
+                        <div class="jelineksoft-input-keyboard-alphas">
                             @for (char c = 'A'; c <= 'Z'; c++)
                             {
                                 var xT = c.ToString();
-                                <button class="jelineksoft-dropdownlist-keyboard-btn-alpha"
+                                <button class="jelineksoft-input-keyboard-btn-alpha"
                                         @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                     @xT
                                 </button>
                             }
                         </div>
                     }
-                    <div class="jelineksoft-dropdownlist-keyboard-system">
+                    <div class="jelineksoft-input-keyboard-system">
                         @if (KeyboardShowAt)
                         {
                             var xT = "@";
-                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                            <button class="jelineksoft-input-keyboard-btn-system"
                                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                 @xT
                             </button>
@@ -110,7 +111,7 @@
                         @if (KeyboardShowDecimal)
                         {
                             var xT = ",";
-                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                            <button class="jelineksoft-input-keyboard-btn-system"
                                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                 @xT
                             </button>
@@ -118,7 +119,7 @@
                         @if (KeyboardShowDot)
                         {
                             var xT = ".";
-                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                            <button class="jelineksoft-input-keyboard-btn-system"
                                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
                                 @xT
                             </button>
@@ -126,7 +127,7 @@
                         @if (KeyboardShowSpace)
                         {
                             var xT = " SPACE ";
-                            <button class="jelineksoft-dropdownlist-keyboard-btn-system"
+                            <button class="jelineksoft-input-keyboard-btn-system"
                                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Space))" tabindex="-1">
                                 @xT
                             </button>
@@ -137,10 +138,10 @@
             }
 
             @HeaderContent
-            <table class="jelineksoft-dropdownlist-table">
+            <table class="jelineksoft-input-table">
                 @if (TableHeaderContent != null)
                 {
-                    <thead class="jelineksoft-dropdownlist-table-header">
+                    <thead class="jelineksoft-input-table-header">
                     <tr>
                         @TableHeaderContent.Invoke(ItemsFiltered)
                     </tr>
@@ -157,11 +158,11 @@
                             if (xI >= ItemStartIndex + PageSize) break;
                             if (item == SelectedItem)
                             {
-                                xClass = "jelineksoft-dropdownlist-table-selecteditem";
+                                xClass = "jelineksoft-input-table-selecteditem";
                             }
                             else
                             {
-                                xClass = "jelineksoft-dropdownlist-table-row";
+                                xClass = "jelineksoft-input-table-row";
                             }
                             if (TableRowContent != null)
                             {
@@ -182,11 +183,11 @@
                     var xPgs = (int) Math.Ceiling(x);
                     if (xPgs > 1)
                     {
-                        <div class="jelineksoft-dropdownlist-pagesrow">
+                        <div class="jelineksoft-input-pagesrow">
                             @for (var xPg = 0; xPg < xPgs; xPg++)
                             {
                                 var xxPage = (xPg) * PageSize;
-                                <button class="jelineksoft-dropdownlist-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
+                                <button class="jelineksoft-input-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
                             }
                         </div>
                     }
@@ -414,8 +415,8 @@
 
     private string GetIsOpenClass()
     {
-        if (AutoOpenDropdownWhenFocus) return "jelineksoft-dropdownlist-isopen";
-        return (IsOpen ? "jelineksoft-dropdownlist-isopen" : "jelineksoft-dropdownlist-isclose");
+        if (AutoOpenDropdownWhenFocus) return "jelineksoft-input-isopen";
+        return (IsOpen ? "jelineksoft-input-isopen" : "jelineksoft-input-isclose");
     }
 
     private bool ShowKeyboardUI()
@@ -489,139 +490,5 @@
 
 <style>
     /*showcases the concept, move to site stylesheet, of course*/
-    .jelineksoft-dropdownlist {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        margin: 2px;
-    }
-    .jelineksoft-dropdownlist-row {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-    }
-    .jelineksoft-dropdownlist-label {
-        clear: both;
-        float: none;
-        display: inline-block;
-        padding: 2px;
-    }
-    .jelineksoft-dropdownlist-input {
-        width: 100%;
-    }
-    .jelineksoft-dropdownlist-button {
-        width:auto;
-    }
-    .jelineksoft-dropdownlist-dropdown {
-         display: none;
-         position: absolute;
-         left: 0;
-         right: 0;
-         min-width: 6em;
-         height: auto;
-         box-shadow: 0px 8px 16px 0px rgba(255,255,255,0.5);
-         z-index: 1;
-         border-color: #4CAF50;
-         border-width: 5px;
-         border-style: double;
-         width: 100%;
-    }
-    .jelineksoft-dropdownlist-isopen {
-        display: block;    
-    }
-    .jelineksoft-dropdownlist-isclose {
-        display: none;    
-    }
-    .jelineksoft-dropdownlist-keyboard {
-        display: flex;
-        flex-direction: column;
-        width: 100%;        
-    }
-    .jelineksoft-dropdownlist-keyboard-numbers {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    .jelineksoft-dropdownlist-keyboard-alphas {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    .jelineksoft-dropdownlist-keyboard-custom {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    .jelineksoft-dropdownlist-pagesrow
-    {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-        align-content: center;            
-    }
-.jelineksoft-dropdownlist-keyboard-system {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-    .jelineksoft-dropdownlist-keyboard-btn-number {        
-        width: auto;        
-    }
-    .jelineksoft-dropdownlist-keyboard-btn-alpha {
-        width: auto;    
-    }
-    .jelineksoft-dropdownlist-keyboard-btn-custom {
-        width: auto;    
-    }
-    .jelineksoft-dropdownlist-keyboard-btn-system {
-        width: auto;    
-    }
-    .jelineksoft-dropdownlist-btn-page {
-        width: auto; 
-        border-radius: 40%;   
-    }
-  
-    
-   .jelineksoft-dropdownlist-dropdown:hover .jelineksoft-dropdownlist-dropdown {
-        display: block;
-   }
-   .jelineksoft-dropdownlist:focus-within .jelineksoft-dropdownlist-dropdown {
-        display: block;
-   }
-  .jelineksoft-dropdownlist:focus-within .jelineksoft-dropdownlist-label {
-        font-weight: bold;
-   }
-   
-   .jelineksoft-dropdownlist-table {
-        table-layout: auto;
-        display: block;
-        white-space: nowrap;
-        overflow-x: auto;
-        width: available;
-   }
-      
-   .jelineksoft-dropdownlist-table-selecteditem {
-        font-weight: bold;
-        background-color: whitesmoke;
-        color: black;
-   }
-   .jelineksoft-dropdownlist-table-row {
-   }
-      .jelineksoft-dropdownlist-table-header {
-           font-weight: bold;
-           background-color: rgba(255,255,255,0.2);
-      }
-
-   .table_wrapper{
-       display: block;
-       overflow-x: auto;
-       white-space: nowrap;
-   }
 
 </style>

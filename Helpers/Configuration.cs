@@ -1,4 +1,4 @@
-﻿namespace Jelineksoft.BlazorLibrary
+﻿namespace Jelineksoft.BlazorLibrary.Helpers
 {
     public static class Configuration
     {

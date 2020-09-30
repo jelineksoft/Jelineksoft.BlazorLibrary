@@ -1,0 +1,164 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  background-color: #383838;
+  color: white;
+  margin: 0;
+  font-size: 100%;
+}
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font: normal 100% 'Segoe UI';
+}
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.7rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+h5 {
+  font-size: 1.3rem;
+}
+h6 {
+  font-size: 1.1rem;
+}
+app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+a {
+  color: #0090ff;
+}
+a :hover {
+  color: #64c6ff;
+}
+input {
+  background-color: white;
+  color: black;
+  width: 100%;
+  font: normal 1.1rem 'Segoe UI';
+  padding: 2px;
+  margin: 2px;
+}
+input :focus {
+  background-color: lightblue;
+  color: black;
+}
+input :disabled {
+  background-color: silver;
+  color: grey;
+}
+img {
+  border-style: none;
+  outline: 0;
+}
+img :hover {
+  border-style: none;
+  outline: 0;
+}
+img :active {
+  outline: 0;
+}
+i {
+  border-style: none;
+  tab-index: -1;
+  outline: 0;
+}
+i :hover {
+  border-style: none;
+  outline: 0;
+}
+i :active {
+  outline: 0;
+}
+select {
+  width: 100%;
+  font: normal 1.1rem 'Segoe UI';
+  padding: 2px;
+  margin: 2px;
+  background-color: #383838;
+  color: white;
+}
+select :hover,
+select :focus {
+  background-color: royalblue;
+  color: white;
+}
+button {
+  background-color: dodgerblue;
+  color: white;
+  font: normal 1.5rem 'Segoe UI';
+  border: solid 1px #69bfff;
+  padding: 5px;
+  width: auto;
+  height: auto;
+  margin: 2px;
+  align-content: center;
+  min-height: 2rem;
+  min-width: 2rem;
+}
+button:hover {
+  border: dot 1px white;
+  color: white;
+  background-color: royalblue;
+}
+button:disabled {
+  color: #404040;
+  background-color: #868686;
+}
+label {
+  display: block;
+}
+img {
+  margin: 0;
+}
+.jsf-error-text {
+  border: solid 1px red;
+  margin: 2px;
+  padding: 3px;
+  color: red;
+  background-color: transparent;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  clear: both;
+}
+.jsf-font-smallxx {
+  font-size: 0.4rem;
+}
+.jsf-font-smallx {
+  font-size: 0.6rem;
+}
+.jsf-font-small {
+  font-size: 0.8rem;
+}
+.jsf-font-normal {
+  font-size: 1rem;
+}
+.jsf-font-big {
+  font-size: 1.2rem;
+}
+.jsf-font-bigx {
+  font-size: 1.5rem;
+}
+.jsf-font-bigxx {
+  font-size: 2rem;
+}
+.jsf-font-bigxxx {
+  font-size: 3rem;
+}
