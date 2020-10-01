@@ -1,4 +1,9 @@
-﻿@jsf-bgcolor: #383838;
+﻿@import "/_content/Jelineksoft.BlazorLibrary/webfonts/fontawesome.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/segoeui.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/jetbrainsmono.css";
+
+
+@jsf-bgcolor: #383838;
 @jsf-bgcolor-header: #515151;
 @jsf-bgcolor-popup: #383838;
 @jsf-color: white;
@@ -29,8 +34,6 @@
 @jsf-btn-bgcolor-disable: #868686;
 @jsf-btn-color-hover: white;
 @jsf-btn-color-disable: #404040;
-@jsf-btn-minheight: 2rem;
-@jsf-btn-minwidth: 2rem;
 @jsf-btn-border: solid 1px #69bfff;
 @jsf-btn-border-hover: dot 1px white;
 @jsf-err-ui-bgcolor: lightcoral;
@@ -169,13 +172,11 @@ button {
   color: @jsf-btn-color;
   font: @jsf-btn-font;
   border: @jsf-btn-border;
-  padding: 5px;
+  padding: 0.5rem;
   width: auto;
   height: auto;
-  margin: 2px;
+  margin: 1px;
   align-content: center;
-  min-height: @jsf-btn-minheight;
-  min-width: @jsf-btn-minwidth;
 
   &:hover {
     border: @jsf-btn-border-hover;

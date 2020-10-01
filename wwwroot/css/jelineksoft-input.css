@@ -1,3 +1,6 @@
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/fontawesome.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/segoeui.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/jetbrainsmono.css";
 * {
   box-sizing: border-box;
 }
@@ -104,13 +107,11 @@ button {
   color: white;
   font: normal 1.5rem 'Segoe UI';
   border: solid 1px #69bfff;
-  padding: 5px;
+  padding: 0.5rem;
   width: auto;
   height: auto;
-  margin: 2px;
+  margin: 1px;
   align-content: center;
-  min-height: 2rem;
-  min-width: 2rem;
 }
 button:hover {
   border: dot 1px white;
@@ -186,7 +187,7 @@ img {
   width: auto;
 }
 .jelineksoft-input-dropdown {
-  display: none;
+  display: block;
   position: absolute;
   left: 0;
   right: 0;
@@ -241,28 +242,29 @@ img {
 }
 .jelineksoft-input-keyboard-btn-number {
   width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
 }
 .jelineksoft-input-keyboard-btn-alpha {
   width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
 }
 .jelineksoft-input-keyboard-btn-custom {
   width: auto;
 }
 .jelineksoft-input-keyboard-btn-system {
   width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
 }
 .jelineksoft-input-btn-page {
   width: auto;
   border-radius: 40%;
+  padding: 0.3rem;
 }
 .jelineksoft-input-dropdown:hover .jelineksoft-input-dropdown {
   display: block;
-}
-.jelineksoft-input:focus-within .jelineksoft-input-dropdown {
-  display: block;
-}
-.jelineksoft-input:focus-within .jelineksoft-input-label {
-  font-weight: bold;
 }
 .jelineksoft-input-table {
   table-layout: auto;

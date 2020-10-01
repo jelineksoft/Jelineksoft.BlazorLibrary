@@ -1,6 +1,294 @@
-a {
-  color: blue;
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/fontawesome.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/segoeui.css";
+@import "/_content/Jelineksoft.BlazorLibrary/webfonts/jetbrainsmono.css";
+* {
+  box-sizing: border-box;
 }
-a:hover {
+html,
+body {
+  background-color: #383838;
+  color: white;
+  margin: 0;
+  font-size: 100%;
+}
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font: normal 100% 'Segoe UI';
+}
+h1 {
+  font-size: 3rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.7rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+h5 {
+  font-size: 1.3rem;
+}
+h6 {
+  font-size: 1.1rem;
+}
+app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+a {
+  color: #0090ff;
+}
+a :hover {
+  color: #64c6ff;
+}
+input {
+  background-color: white;
+  color: black;
+  width: 100%;
+  font: normal 1.1rem 'Segoe UI';
+  padding: 2px;
+  margin: 2px;
+}
+input :focus {
+  background-color: lightblue;
+  color: black;
+}
+input :disabled {
+  background-color: silver;
+  color: grey;
+}
+img {
+  border-style: none;
+  outline: 0;
+}
+img :hover {
+  border-style: none;
+  outline: 0;
+}
+img :active {
+  outline: 0;
+}
+i {
+  border-style: none;
+  tab-index: -1;
+  outline: 0;
+}
+i :hover {
+  border-style: none;
+  outline: 0;
+}
+i :active {
+  outline: 0;
+}
+select {
+  width: 100%;
+  font: normal 1.1rem 'Segoe UI';
+  padding: 2px;
+  margin: 2px;
+  background-color: #383838;
+  color: white;
+}
+select :hover,
+select :focus {
+  background-color: royalblue;
+  color: white;
+}
+button {
+  background-color: dodgerblue;
+  color: white;
+  font: normal 1.5rem 'Segoe UI';
+  border: solid 1px #69bfff;
+  padding: 0.5rem;
+  width: auto;
+  height: auto;
+  margin: 1px;
+  align-content: center;
+}
+button:hover {
+  border: dot 1px white;
+  color: white;
+  background-color: royalblue;
+}
+button:disabled {
+  color: #404040;
+  background-color: #868686;
+}
+label {
+  display: block;
+}
+img {
+  margin: 0;
+}
+.jsf-error-text {
+  border: solid 1px red;
+  margin: 2px;
+  padding: 3px;
   color: red;
+  background-color: transparent;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  clear: both;
+}
+.jsf-font-smallxx {
+  font-size: 0.4rem;
+}
+.jsf-font-smallx {
+  font-size: 0.6rem;
+}
+.jsf-font-small {
+  font-size: 0.8rem;
+}
+.jsf-font-normal {
+  font-size: 1rem;
+}
+.jsf-font-big {
+  font-size: 1.2rem;
+}
+.jsf-font-bigx {
+  font-size: 1.5rem;
+}
+.jsf-font-bigxx {
+  font-size: 2rem;
+}
+.jsf-font-bigxxx {
+  font-size: 3rem;
+}
+.jelineksoft-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 2px;
+}
+.jelineksoft-input-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.jelineksoft-input-label {
+  clear: both;
+  float: none;
+  display: inline-block;
+  padding: 2px;
+}
+.jelineksoft-input-input {
+  width: 100%;
+}
+.jelineksoft-input-button {
+  width: auto;
+}
+.jelineksoft-input-dropdown {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 6em;
+  height: auto;
+  box-shadow: 0px 8px 16px 0px rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  border: solid 2x silver;
+  width: 100%;
+}
+.jelineksoft-input-isopen {
+  display: block;
+}
+.jelineksoft-input-isclose {
+  display: none;
+}
+.jelineksoft-input-keyboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-numbers {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-alphas {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-custom {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-pagesrow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  align-content: center;
+}
+.jelineksoft-input-keyboard-system {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-input-keyboard-btn-number {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-input-keyboard-btn-alpha {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-input-keyboard-btn-custom {
+  width: auto;
+}
+.jelineksoft-input-keyboard-btn-system {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-input-btn-page {
+  width: auto;
+  border-radius: 40%;
+  padding: 0.3rem;
+}
+.jelineksoft-input-dropdown:hover .jelineksoft-input-dropdown {
+  display: block;
+}
+.jelineksoft-input-table {
+  table-layout: auto;
+  display: block;
+  white-space: nowrap;
+  overflow-x: auto;
+  width: available;
+}
+.jelineksoft-input-table-selecteditem {
+  font-weight: bold;
+  background-color: #467692;
+  color: white;
+}
+.jelineksoft-input-table-header {
+  font-weight: bold;
+  background-color: #515151;
+  color: white;
+}
+.jelineksoft-input-dropdown {
+  background-color: #383838;
+  color: white;
+}
+.table_wrapper {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }

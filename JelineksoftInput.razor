@@ -4,36 +4,40 @@
 @using System.Dynamic
 @using System.Threading
 @using Jelineksoft.BlazorLibrary.Helpers
+@using Jelineksoft.Logging
 @implements IDisposable
-<div class="jelineksoft-input" @onblur="(() => Console.WriteLine('a'))">
+@inject ILogFactory Logger
+
+<div class="jelineksoft-input" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
     <div class="jelineksoft-input-label">@Label</div>
     <div class="jelineksoft-input-row">
-        <input @bind-value="@Text" @bind-value:event="oninput"
-                class="jelineksoft-input-input"/>
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none"
+               class="jelineksoft-input-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
+        <div>@HasFocusIn.ToString()</div>
         @if (ShowButtonBackspace)
         {
             var xT = "";
-            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Del))" tabindex="-1">
+            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Del))">
                 <i class="fa fa-backspace"/>
             </button>
         }
         @if (ShowButtonCut)
         {
             var xT = "";
-            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))" tabindex="-1">
+            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))">
                 <i class="fa fa-cut"/>
             </button>
         }
         @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
         {
-            <button class="jelineksoft-input-button" @onclick="OpenDropDownHandler" tabindex="-1">
+            <button tabindex="-1" class="jelineksoft-input-button" @onclick="OpenDropDownHandler">
                 <i class="fa fa-ellipsis-h"/>
             </button>
         }
         @if (KeyboardShowEnter)
         {
             var xT = "";
-            <button class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))" tabindex="-1">
+            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))">
                 @if (KeyboardEnterString.Length > 0)
                 {
                     @KeyboardEnterString
@@ -47,9 +51,7 @@
         }
     </div>
 
-    @{
 
-    }
     <div class="@GetIsOpenClass()">
         <div class="jelineksoft-input-dropdown">
             @if (ShowKeyboardUI())
@@ -64,8 +66,8 @@
                         }
                         @foreach (var xT in KeyboardCustomKeys.Split(KeyboardCustomKeysSeparator.ToCharArray()[0]))
                         {
-                            <button class="jelineksoft-input-keyboard-btn-custom"
-                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                            <button tabindex="-1" class="jelineksoft-input-keyboard-btn-custom"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                 @xT
                             </button>
                         }
@@ -78,8 +80,8 @@
                             @for (int i = 0; i < 10; i++)
                             {
                                 var xT = i.ToString();
-                                <button class="jelineksoft-input-keyboard-btn-number"
-                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                <button tabindex="-1" class="jelineksoft-input-keyboard-btn-number"
+                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                     @xT
                                 </button>
                             }
@@ -92,8 +94,8 @@
                             @for (char c = 'A'; c <= 'Z'; c++)
                             {
                                 var xT = c.ToString();
-                                <button class="jelineksoft-input-keyboard-btn-alpha"
-                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                                <button tabindex="-1"  class="jelineksoft-input-keyboard-btn-alpha"
+                                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                     @xT
                                 </button>
                             }
@@ -103,32 +105,32 @@
                         @if (KeyboardShowAt)
                         {
                             var xT = "@";
-                            <button class="jelineksoft-input-keyboard-btn-system"
-                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                            <button tabindex="-1" class="jelineksoft-input-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                 @xT
                             </button>
                         }
                         @if (KeyboardShowDecimal)
                         {
                             var xT = ",";
-                            <button class="jelineksoft-input-keyboard-btn-system"
-                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                            <button tabindex="-1" class="jelineksoft-input-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                 @xT
                             </button>
                         }
                         @if (KeyboardShowDot)
                         {
                             var xT = ".";
-                            <button class="jelineksoft-input-keyboard-btn-system"
-                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))" tabindex="-1">
+                            <button tabindex="-1" class="jelineksoft-input-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
                                 @xT
                             </button>
                         }
                         @if (KeyboardShowSpace)
                         {
                             var xT = " SPACE ";
-                            <button class="jelineksoft-input-keyboard-btn-system"
-                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Space))" tabindex="-1">
+                            <button tabindex="-1" class="jelineksoft-input-keyboard-btn-system"
+                                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Space))">
                                 @xT
                             </button>
                         }
@@ -151,6 +153,7 @@
                 {
                     var xI = 0;
                     var xClass = "";
+                    if (ItemStartIndex > ItemsFiltered.Count) ItemStartIndex = 0;
                     foreach (var item in ItemsFiltered)
                     {
                         if (xI >= ItemStartIndex)
@@ -166,11 +169,11 @@
                             }
                             if (TableRowContent != null)
                             {
-                                <tr class="@xClass" tabindex="0" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@TableRowContent.Invoke(item)</tr>
+                                <tr tabindex="-1" @onkeydown="@InputBoxOnKeyDownHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@TableRowContent.Invoke(item)</tr>
                             }
                             else
                             {
-                                <tr class="@xClass" tabindex="0" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@item.ToString()</tr>
+                                <tr tabindex="-1" @onkeydown="InputBoxOnKeyDownHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@item.ToString()</tr>
                             }
                         }
                         xI++;
@@ -178,6 +181,8 @@
                 }
             </table>
             @{
+                if (ItemsFiltered != null)
+                {
                     //Stranky
                     var x = ((double) ItemsFiltered.Count / (double) PageSize);
                     var xPgs = (int) Math.Ceiling(x);
@@ -187,10 +192,11 @@
                             @for (var xPg = 0; xPg < xPgs; xPg++)
                             {
                                 var xxPage = (xPg) * PageSize;
-                                <button class="jelineksoft-input-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
+                                <button tabindex="-1"  class="jelineksoft-input-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
                             }
                         </div>
                     }
+                }
             }
             <div>@FooterContent</div>
         </div>
@@ -200,6 +206,9 @@
 @code {
 
     [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
     public string Label { get; set; }
 
     private string xText = "";
@@ -207,14 +216,49 @@
     [Parameter]
     public string Text
     {
-        get { return xText; }
+        get
+        {
+            if (HasFocusIn || IsOpen)
+            {
+                return xText;
+            }
+            return TextSelectedValue;
+        }
         set
         {
-            if (xText != value)
+            if (HasFocusIn || IsOpen)
             {
-                xText = value;
-                FilterItems();
-                OnTextChanged.InvokeAsync(xText);
+                if (xText != value)
+                {
+                    LogT("Text property", $"Set xText value={value}");
+                    xText = value;
+                    LogT("Text property", "Call FilterItems");
+                    FilterItems();
+                    LogT("Text property", "Call OnTextChanged event");
+                    OnTextChanged.InvokeAsync(xText);
+                }
+            }
+            else
+            {
+                LogT("Text property", "Set TextSelectedValue = {value}");
+                TextSelectedValue = value;
+            }
+        }
+    }
+
+    private string xTextSelectedValue = "";
+
+    [Parameter]
+    public string TextSelectedValue
+    {
+        get { return xTextSelectedValue; }
+        set
+        {
+            if (xTextSelectedValue != value)
+            {
+                xTextSelectedValue = value;
+                LogT("TextSelectedValue property", "Set xTextSelectedValue = {value} and call event OnTextSelectedValueChanged.");
+                OnTextSelectedValueChanged.InvokeAsync(xTextSelectedValue);
             }
         }
     }
@@ -238,7 +282,46 @@
     public int PageSize { get; set; } = 10;
 
     [Parameter]
+    public bool KeyTabCallOK { get; set; } = true;
+
+    [Parameter]
+    public bool KeyEnterCallOK { get; set; } = true;
+
+    [Parameter]
     public bool? KeyboardShow { get; set; } = null;
+
+    [Parameter]
+    public bool? KeyboardShowAll
+    {
+        set
+        {
+            if (value.HasValue)
+            {
+                if (value.Value == true)
+                {
+                    KeyboardShowAt = true;
+                    KeyboardShowClear = true;
+                    KeyboardShowDecimal = true;
+                    KeyboardShowDot = true;
+                    KeyboardShowEnter = true;
+                    KeyboardShowNumbers = true;
+                    KeyboardShowSpace = true;
+                    KeyboardShowAZ = true;
+                }
+                else
+                {
+                    KeyboardShowAt = false;
+                    KeyboardShowClear = false;
+                    KeyboardShowDecimal = false;
+                    KeyboardShowDot = false;
+                    KeyboardShowEnter = false;
+                    KeyboardShowNumbers = false;
+                    KeyboardShowSpace = false;
+                    KeyboardShowAZ = false;
+                }
+            }
+        }
+    }
 
     [Parameter]
     public bool KeyboardShowNumbers { get; set; } = true;
@@ -299,11 +382,11 @@
             if (xItems != value)
             {
                 xItems = value;
-                SelectedItem = null;
-                FilterItems();
+                ResetData();
             }
         }
     }
+
 
     [Parameter]
     public IList ItemsFiltered { get; set; }
@@ -328,19 +411,41 @@
     public Func<object, string, bool> FilterItemMethod { get; set; }
 
     [Parameter]
-    public EventCallback OnKeyEnterClick { get; set; }
+    public Func<object, string> SelectedValueTextMethod { get; set; }
+
+    [Parameter]
+    public EventCallback<ButtonOkClickEventValue> OnButtonOKClick { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnFocusOutHandler { get; set; }
 
     [Parameter]
     public EventCallback<object> OnTextChanged { get; set; }
 
     [Parameter]
+    public EventCallback<object> OnTextSelectedValueChanged { get; set; }
+
+    [Parameter]
     public EventCallback<object> OnSelectedItemChanged { get; set; }
 
+    public class ButtonOkClickEventValue
+    {
+        public ButtonOkClickEventValue(KeyboardButtonTypeEnum key, object item)
+        {
+            KeyFireEvent = key;
+            SelectedItem = item;
+        }
+
+        public object SelectedItem { get; set; }
+        public KeyboardButtonTypeEnum KeyFireEvent { get; set; }
+    }
 
     private int ItemStartIndex { get; set; } = 0;
+    private bool isInitialized = false;
 
 
     public bool IsOpen { get; set; } = false;
+    public bool HasFocusIn { get; set; } = false;
 
 
     protected override void OnInitialized()
@@ -352,6 +457,7 @@
 
     protected override void OnParametersSet()
     {
+        isInitialized = true;
         FilterItems();
         base.OnParametersSet();
     }
@@ -360,25 +466,46 @@
 
     private void FilterItems()
     {
-        if ((Text.Length >= ItemsFilterStartLen) && (Items != null))
+        if (!isInitialized) return;
+
+        LogT("FilterItems", $"Text={xText}");
+        if (Items == null)
         {
+            LogT("FilterItems", $"Items are null.");
+            ItemsFiltered = null;
+            SetSelectedItem(null);
+            return;
+        }
+        if (FilterItemMethod == null)
+        {
+            LogD("FilterItems", $"FilterItemMethod is null. Filtering is not enabled.");
+            if (ItemsFiltered != Items) ItemsFiltered = Items;
+        }
+
+        if (xText.Length >= ItemsFilterStartLen)
+        {
+            if (xText == xLastFilteredString)
+            {
+                LogT("FilterItems", $"Text is same as last filtered text. Return with no filter items.");
+                return;
+            }
+
             var xItemsToFilter = Items;
-            if (xLastFilteredString.Length < Text.Length)
+            if (xLastFilteredString.Length < xText.Length)
             {
                 if (ItemsFiltered != null)
                     if (ItemsFiltered.Count > 0)
                     {
+                        LogT("FilterItems", $"Filtering will be from filtered items.");
                         xItemsToFilter = ItemsFiltered;
                     }
             }
             ItemsFiltered = new List<object>();
             foreach (var item in xItemsToFilter)
             {
-                bool xAdd = true;
-                if (FilterItemMethod != null)
-                {
-                    xAdd = FilterItemMethod(item, this.Text);
-                }
+                LogT("FilterItems", $"Call FilterItemMethod.");
+                var xAdd = FilterItemMethod(item, xText);
+                LogT("FilterItems", $"Return {xAdd} from FilterItemMethod.");
                 if (xAdd)
                 {
                     ItemsFiltered.Add(item);
@@ -387,7 +514,8 @@
                 {
                     if (SelectedItem == item)
                     {
-                        SelectedItem = null; //Reset slected item when is not in filtered items
+                        LogT("FilterItems", $"Set SelectedItem to null because is not in filtered items.");
+                        SetSelectedItem(null); //Reset slected item when is not in filtered items
                     }
                 }
             }
@@ -395,27 +523,50 @@
             {
                 if (ItemsFiltered.Count == 1)
                 {
-                    SelectedItem = ItemsFiltered[0];
+                    LogD("FilterItems", $"Set automatic SelectedItem because filtered items count is 1 and AutoSelectItem=true.");
+                    SetSelectedItem(ItemsFiltered[0]);
                 }
             }
-            xLastFilteredString = Text;
+            xLastFilteredString = xText;
         }
         else
         {
             ItemsFiltered = new List<object>();
-            SelectedItem = null;
-            xLastFilteredString = "";
+            xLastFilteredString = DateTime.Now.Ticks.ToString();
+            if (HasFocusIn)
+            {
+                SetSelectedItem(null);
+            }
         }
     }
 
     public void SetSelectedItem(object item)
     {
+        LogT("SetSelectedItem", item == null ? "item is null" : item.ToString());
         SelectedItem = item;
+        if (SelectedValueTextMethod != null)
+        {
+            LogD("SetSelectedItem", "Call SelectedValueTextMethod");
+            TextSelectedValue = SelectedValueTextMethod(item);
+        }
+        else
+        {
+            LogT("SetSelectedItem", $"TextSelectedValue set with ToString = {item}");
+            if (item != null)
+            {
+                TextSelectedValue = item.ToString();
+            }
+            else
+            {
+                TextSelectedValue = "";
+            }
+        }
+        StateHasChanged();
     }
 
     private string GetIsOpenClass()
     {
-        if (AutoOpenDropdownWhenFocus) return "jelineksoft-input-isopen";
+    //if (AutoOpenDropdownWhenFocus) return "jelineksoft-input-isopen";
         return (IsOpen ? "jelineksoft-input-isopen" : "jelineksoft-input-isclose");
     }
 
@@ -436,6 +587,7 @@
     private void OpenDropDownHandler()
     {
         IsOpen = !IsOpen;
+        LogT("OpenDropDownHandler", $"IsOpen={IsOpen}");
         StateHasChanged();
     }
 
@@ -446,7 +598,8 @@
         Del,
         Tab,
         Clear,
-        Space
+        Space,
+        Esc
     }
 
     public void KeyboardButtonClick(string keys)
@@ -458,8 +611,10 @@
     {
         switch (type)
         {
+            case KeyboardButtonTypeEnum.Esc:
             case KeyboardButtonTypeEnum.Clear:
-                this.Text = "";
+                this.xText = "";
+                SetSelectedItem(null);
                 break;
             case KeyboardButtonTypeEnum.Del:
                 if (this.Text.Length > 0)
@@ -468,10 +623,14 @@
                 }
                 break;
             case KeyboardButtonTypeEnum.Enter:
-                OnKeyEnterClick.InvokeAsync(null);
+                    IsOpen = false;
+                StateHasChanged();
+                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem));
                 break;
             case KeyboardButtonTypeEnum.Tab:
-    //todo:tab
+                    IsOpen = false;
+                StateHasChanged();
+                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem));
                 break;
             case KeyboardButtonTypeEnum.Space:
                 this.Text = this.Text + " ";
@@ -482,9 +641,72 @@
         }
     }
 
+    private void ChangeFocusIn(bool hasFocus)
+    {
+        LogD("ChangeFocusIn", $"Has focus {hasFocus}.");
+        HasFocusIn = hasFocus;
+        if (AutoOpenDropdownWhenFocus)
+        {
+            if (HasFocusIn)
+                IsOpen = true;
+        }
+        if (!HasFocusIn)
+        {
+            LogT("ChangeFocusIn", $"Invoke OnFocusOut.");
+            OnFocusOutHandler.InvokeAsync(SelectedItem);
+        }
+        StateHasChanged();
+    }
+
+    private void LogT(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Trace(this, subject, desc);
+        }
+    }
+
+    private void LogD(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Debug(this, subject, desc);
+        }
+    }
+
+    public void ResetData()
+    {
+        ItemsFiltered = null;
+        SetSelectedItem(null);
+        xText = "";
+        ItemStartIndex = 0;
+    }
+
+    private void InputBoxOnKeyDownHandler(KeyboardEventArgs obj)
+    {
+        if (obj != null)
+        {
+            LogT("KeyPress", $"KeyPress code: {obj.Code} key:{obj.Key}");
+            switch (obj.Code)
+            {
+                case "Escape":
+                    KeyboardButtonClick("", KeyboardButtonTypeEnum.Esc);
+                    break;
+                case "Enter":
+                    KeyboardButtonClick("", KeyboardButtonTypeEnum.Enter);
+                    break;
+                case "Tab":
+                    KeyboardButtonClick("", KeyboardButtonTypeEnum.Tab);
+                    break;
+            }
+        }
+    }
+
+
     public void Dispose()
     {
     }
+
 
 }
 
