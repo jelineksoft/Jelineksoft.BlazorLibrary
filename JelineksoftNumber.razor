@@ -1,0 +1,276 @@
+﻿@using Jelineksoft.Logging
+@using System.Reflection.Emit
+@using System.Net.Mime
+@using Jelineksoft.BlazorLibrary.Helpers
+@using System.Net.Http.Headers
+@inject ILogFactory Logger
+
+<div class="jelineksoft-number" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
+    <div class="jelineksoft-number-label">@Label</div>
+    <div class="jelineksoft-number-row">
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none"
+               class="jelineksoft-number-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
+        @if (ShowButtonBackspace)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-number-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del))">
+                <i class="fa fa-backspace"/>
+            </button>
+        }
+        @if (ShowButtonCut)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-number-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear))">
+                <i class="fa fa-cut"/>
+            </button>
+        }
+        @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
+        {
+            <button tabindex="-1" class="jelineksoft-number-button" @onclick="OpenDropDownHandler">
+                <i class="fa fa-ellipsis-h"/>
+            </button>
+        }
+        @if (ShowButtonOK)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-number-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter))">
+                @if (ButtonOkText.Length > 0)
+                {
+                    @ButtonOkText
+                }
+                else
+                {
+                    <i class="fa fa-thumbs-up"/>
+                }
+
+            </button>
+        }
+    </div>
+
+
+    <div class="@GetIsOpenClass()">
+        <div class="@ShowKeyboardUI()">
+            <div class="jelineksoft-number-dropdown">
+                <JelineksoftVirtualKeyboard @ref="Keyboard" OnKeyClick="@VirtualKbClick"></JelineksoftVirtualKeyboard>
+            </div>
+        </div>
+        </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    private string xText = "";
+
+    [Parameter]
+    public string Text
+    {
+        get { return xText; }
+        set
+        {
+            if (xText != value)
+            {
+                decimal xD = 0;
+                LogT("Text property", $"Set xText value={value}");
+                if (decimal.TryParse(value, out xD))
+                {
+                    xText = value;
+                    LogT("Text property", "Call OnTextChanged event");
+                    OnTextChanged.InvokeAsync(xText);
+                    ValueChanged.InvokeAsync(xD);
+                }
+            }
+        }
+    }
+
+    [Parameter]
+    public decimal? Value
+    {
+        get
+        {
+            decimal xD = 0;
+            if (decimal.TryParse(Text, out xD))
+            {
+                return xD;
+            }
+            return null;
+        }
+        set
+        {
+            if (value != null)
+            {
+                LogT("Text property", "Call OnTextChanged event");
+                Text = value.ToString();
+            }
+        }
+    }
+
+
+    [Parameter]
+    public bool KeyTabCallOK { get; set; } = true;
+
+    [Parameter]
+    public bool KeyEnterCallOK { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonBackspace { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonCut { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonOpen { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonOK { get; set; } = true;
+
+    [Parameter]
+    public string ButtonOkText { get; set; } = "OK";
+
+    [Parameter]
+    public bool AutoOpenDropdownWhenFocus { get; set; } = false;
+
+    [Parameter]
+    public bool? KeyboardShow { get; set; } = null;
+
+    [Parameter]
+    public JelineksoftVirtualKeyboard Keyboard { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnTextChanged { get; set; }
+    [Parameter]
+    public EventCallback<decimal> ValueChanged { get; set; }
+    
+    [Parameter]
+    public EventCallback<JelineksoftInput.ButtonOkClickEventValue> OnButtonOKClick { get; set; }
+
+
+    bool HasFocusIn = false;
+    bool IsOpen = false;
+
+    private bool ShowKeyboardUI()
+    {
+        var xShow = false;
+        if (KeyboardShow.HasValue == false)
+        {
+            xShow = Configuration.ShowKeyboard;
+        }
+        else
+        {
+            xShow = KeyboardShow.Value;
+        }
+        return xShow;
+    }
+    
+    private string GetIsOpenClass()
+    {
+        return (IsOpen ? "jelineksoft-number-isopen" : "jelineksoft-number-isclose");
+    }
+
+
+    private void LogT(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Trace(this, subject, desc);
+        }
+    }
+
+    private void LogD(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Debug(this, subject, desc);
+        }
+    }
+
+    private void ChangeFocusIn(bool hasFocus)
+    {
+        LogD("ChangeFocusIn", $"Has focus {hasFocus}.");
+        HasFocusIn = hasFocus;
+        if (AutoOpenDropdownWhenFocus)
+        {
+            if (HasFocusIn)
+                IsOpen = true;
+        }
+        StateHasChanged();
+    }
+
+    private void KeyPress(string key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum type)
+    {
+        switch (type)
+        {
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc:
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear:
+                Text = "0";
+                break;
+                case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del:
+                    if (Text.Length > 0)
+                    {
+                        Text = Text.Substring(0, Text.Length - 1);
+                    }
+                    break;
+                    case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
+                        IsOpen = false;
+                        if (KeyEnterCallOK)
+                        {
+                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value));
+                        }
+                        StateHasChanged();
+                        break;
+                    case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
+                        IsOpen = false;
+                        if (KeyTabCallOK)
+                        {
+                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value));
+                        }
+                        StateHasChanged();
+                    break;
+            default:
+                Text = Text + key;
+                break;
+        }
+    }
+
+    private void InputBoxOnKeyDownHandler(KeyboardEventArgs obj)
+    {
+        switch (obj.Key)
+        {
+            case "Enter":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter);
+                break;
+            case "Escape":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc);
+                break;
+            case "Tab":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab);
+                break;
+            default:
+                KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
+                break;
+        }
+    }
+
+    private void VirtualKbClick(JelineksoftVirtualKeyboard.KeyClickEvent obj)
+    {
+        KeyPress(obj.Keys, obj.Type);
+    }
+
+    private void KeyboardButtonClick(string xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum del)
+    {
+        KeyPress(xT, del);
+    }
+
+    private void OpenDropDownHandler()
+    {
+        IsOpen = !IsOpen;
+        StateHasChanged();
+    }
+
+}

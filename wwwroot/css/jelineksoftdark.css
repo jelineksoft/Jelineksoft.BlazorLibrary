@@ -292,3 +292,98 @@ img {
   overflow-x: auto;
   white-space: nowrap;
 }
+.jelineksoft-virtualkeyboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.jelineksoft-virtualkeyboard-numbers {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-virtualkeyboard-alphas {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-virtualkeyboard-custom {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-virtualkeyboard-system {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.jelineksoft-virtualkeyboard-btn-number {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-virtualkeyboard-btn-alpha {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-virtualkeyboard-btn-custom {
+  width: auto;
+}
+.jelineksoft-virtualkeyboard-btn-system {
+  width: auto;
+  font: normal 100% 'JetBrains Mono';
+  padding: 0.3rem;
+}
+.jelineksoft-number {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 2px;
+}
+.jelineksoft-number-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.jelineksoft-number-label {
+  clear: both;
+  float: none;
+  display: inline-block;
+  padding: 2px;
+}
+.jelineksoft-number-input {
+  width: 100%;
+}
+.jelineksoft-number-button {
+  width: auto;
+}
+.jelineksoft-number-dropdown {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 6em;
+  height: auto;
+  box-shadow: 0px 8px 16px 0px rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  border: solid 2x silver;
+  width: 100%;
+}
+.jelineksoft-number-isopen {
+  display: block;
+}
+.jelineksoft-number-isclose {
+  display: none;
+}
+.jelineksoft-number-dropdown:hover .jelineksoft-number-dropdown {
+  display: block;
+}
+.jelineksoft-number-dropdown {
+  background-color: #383838;
+  color: white;
+}

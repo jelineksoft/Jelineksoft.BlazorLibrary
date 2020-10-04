@@ -1,0 +1,228 @@
+﻿@using Jelineksoft.BlazorLibrary.Helpers
+@using Jelineksoft.Logging
+@inject ILogFactory Logger
+
+
+<div style="clear: both;"></div>
+@if (KeyboardCustomKeys.Length > 0)
+{
+    <div class="jelineksoft-virtualkeyboard-custom">
+        @if (KeyboardCustomKeysSeparator.Length != 1)
+        {
+            KeyboardCustomKeysSeparator = ",";
+        }
+        @foreach (var xT in KeyboardCustomKeys.Split(KeyboardCustomKeysSeparator.ToCharArray()[0]))
+        {
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-custom"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                @xT
+            </button>
+        }
+    </div>
+}
+<div class="jelineksoft-virtualkeyboard">
+    @if (KeyboardShowNumbers)
+    {
+        <div class="jelineksoft-virtualkeyboard-numbers">
+            @for (int i = 0; i < 10; i++)
+            {
+                var xT = i.ToString();
+                <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-number"
+                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                    @xT
+                </button>
+            }
+        </div>
+    }
+    <div style="clear: both;"></div>
+    @if (KeyboardShowAZ)
+    {
+        <div class="jelineksoft-virtualkeyboard-alphas">
+            @for (char c = 'A'; c <= 'Z'; c++)
+            {
+                var xT = c.ToString();
+                <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-alpha"
+                        @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                    @xT
+                </button>
+            }
+        </div>
+    }
+    <div class="jelineksoft-virtualkeyboard-system">
+        @if (KeyboardShowAt)
+        {
+            var xT = "@";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                @xT
+            </button>
+        }
+        @if (KeyboardShowDecimal)
+        {
+            var xT = ",";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                @xT
+            </button>
+        }
+        @if (KeyboardShowDot)
+        {
+            var xT = ".";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Default))">
+                @xT
+            </button>
+        }
+        @if (KeyboardShowSpace)
+        {
+            var xT = " SPACE ";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Space))">
+                @xT
+            </button>
+        }
+        @if (KeyboardShowClear)
+        {
+            var xT = " CLR ";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))">
+                @xT
+            </button>
+        }
+        @if (KeyboardShowEnter)
+        {
+            var xT = " ENTER ";
+            <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
+                    @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Enter))">
+                @xT
+            </button>
+        }
+
+    </div>
+</div>
+
+@code {
+
+
+    [Parameter]
+    public bool? KeyboardShowAll
+    {
+        set
+        {
+            if (value.HasValue)
+            {
+                LogT("KeyboardShowAll", $"Set value {value}.");
+                if (value.Value == true)
+                {
+                    KeyboardShowAt = true;
+                    KeyboardShowClear = true;
+                    KeyboardShowDecimal = true;
+                    KeyboardShowDot = true;
+                    KeyboardShowEnter = true;
+                    KeyboardShowNumbers = true;
+                    KeyboardShowSpace = true;
+                    KeyboardShowAZ = true;
+                }
+                else
+                {
+                    KeyboardShowAt = false;
+                    KeyboardShowClear = false;
+                    KeyboardShowDecimal = false;
+                    KeyboardShowDot = false;
+                    KeyboardShowEnter = false;
+                    KeyboardShowNumbers = false;
+                    KeyboardShowSpace = false;
+                    KeyboardShowAZ = false;
+                }
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter]
+    public bool KeyboardShowNumbers { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowAZ { get; set; } = false;
+
+    [Parameter]
+    public bool KeyboardShowDecimal { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowDot { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowEnter { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowClear { get; set; } = true;
+
+    [Parameter]
+    public bool KeyboardShowAt { get; set; } = false;
+
+    [Parameter]
+    public bool KeyboardShowSpace { get; set; } = false;
+
+    [Parameter]
+    public string KeyboardEnterString { get; set; } = "OK";
+
+    [Parameter]
+    public string KeyboardClearString { get; set; } = "CLR";
+
+    [Parameter]
+    public string KeyboardCustomKeys { get; set; } = "";
+
+    [Parameter]
+    public string KeyboardCustomKeysSeparator { get; set; } = ",";
+
+    [Parameter]
+    public EventCallback<KeyClickEvent> OnKeyClick { get; set; }
+
+    public class KeyClickEvent
+    {
+        public KeyClickEvent(string keys, KeyboardButtonTypeEnum type)
+        {
+            this.Keys = keys;
+            this.Type = type;
+        }
+
+        public string Keys { get; set; }
+        public KeyboardButtonTypeEnum Type { get; set; }
+    }
+
+
+    public enum KeyboardButtonTypeEnum
+    {
+        Default,
+        Enter,
+        Del,
+        Tab,
+        Clear,
+        Space,
+        Esc
+    }
+
+
+    private void KeyboardButtonClick(string xT, KeyboardButtonTypeEnum type)
+    {
+        LogT("KeyboardButtonClick", $"Click to {xT} {type}.");
+        OnKeyClick.InvokeAsync(new KeyClickEvent(xT, type));
+    }
+
+    private void LogT(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Trace(this, subject, desc);
+        }
+    }
+
+    private void LogD(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Debug(this, subject, desc);
+        }
+    }
+
+}

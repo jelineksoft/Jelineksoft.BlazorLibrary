@@ -1,0 +1,51 @@
+﻿@import "jelineksoft.less";
+
+.jelineksoft-number {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 2px;
+}
+.jelineksoft-number-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.jelineksoft-number-label {
+  clear: both;
+  float: none;
+  display: inline-block;
+  padding: 2px;
+}
+.jelineksoft-number-input {
+  width: 100%;
+}
+.jelineksoft-number-button {
+  width:auto;
+}
+.jelineksoft-number-dropdown {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 6em;
+  height: auto;
+  box-shadow: @jsf-popup-box-shadow;
+  z-index: 1;
+  border: @jsf-popup-border;
+  width: 100%;
+}
+.jelineksoft-number-isopen {
+  display: block;
+}
+.jelineksoft-number-isclose {
+  display: none;
+}
+
+.jelineksoft-number-dropdown:hover .jelineksoft-number-dropdown {
+  display: block;
+}
+.jelineksoft-number-dropdown {
+  background-color: @jsf-bgcolor-popup;
+  color: @jsf-color-popup;
+}
