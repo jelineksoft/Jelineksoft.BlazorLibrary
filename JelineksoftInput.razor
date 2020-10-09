@@ -217,7 +217,24 @@
     public bool? KeyboardShow { get; set; } = null;
 
     [Parameter]
-    public JelineksoftVirtualKeyboard Keyboard { get; set; }
+    public JelineksoftVirtualKeyboard Keyboard { get; set; } = new JelineksoftVirtualKeyboard();
+
+    [Parameter]
+    public string KeyboardCustomKeys
+    {
+        get { return Keyboard.KeyboardCustomKeys;}
+        set { Keyboard.KeyboardCustomKeys = value; }
+    } 
+
+    [Parameter]
+    public string KeyboardCustomKeysSeparator
+    {
+        get { return Keyboard.KeyboardCustomKeysSeparator;}
+        set { Keyboard.KeyboardCustomKeysSeparator = value; }
+    } 
+
+    
+    
 
     [Parameter]
     public RenderFragment HeaderContent { get; set; }

@@ -204,6 +204,7 @@
 
     private void KeyPress(string key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum type)
     {
+        LogT("KeyPress", $"Key {key} type {type}.");
         switch (type)
         {
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc:
@@ -252,7 +253,7 @@
                 KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab);
                 break;
             default:
-                KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
+               // KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
                 break;
         }
     }
