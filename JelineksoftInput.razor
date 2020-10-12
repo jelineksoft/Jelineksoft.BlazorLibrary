@@ -279,8 +279,12 @@
         get { return xSelectedItem; }
         set
         {
-            xSelectedItem = value;
-            OnSelectedItemChanged.InvokeAsync(xSelectedItem);
+            if (xSelectedItem != value)
+            {
+                xSelectedItem = value;
+                OnSelectedItemChanged.InvokeAsync(xSelectedItem);
+                StateHasChanged();
+            }
         }
     }
 
@@ -339,7 +343,12 @@
         base.OnParametersSet();
     }
 
-    private string xLastFilteredString = "";
+    public void FilterData()
+    {
+        FilterItems();
+    }
+    
+    private string xLastFilteredString = DateTime.Now.ToString();
 
     private void FilterItems()
     {
@@ -357,6 +366,7 @@
         {
             LogD("FilterItems", $"FilterItemMethod is null. Filtering is not enabled.");
             if (ItemsFiltered != Items) ItemsFiltered = Items;
+            return;
         }
 
         if (xText.Length >= ItemsFilterStartLen)
@@ -463,7 +473,10 @@
         if (AutoOpenDropdownWhenFocus)
         {
             if (HasFocusIn)
+            {
                 IsOpen = true;
+                FilterItems();
+            }
         }
         if (!HasFocusIn)
         {
@@ -495,6 +508,8 @@
         SetSelectedItem(null);
         xText = "";
         ItemStartIndex = 0;
+        xLastFilteredString = DateTime.Now.ToString();
+        FilterItems();
     }
 
     private void InputBoxOnKeyDownHandler(KeyboardEventArgs obj)
