@@ -8,10 +8,10 @@
 @implements IDisposable
 @inject ILogFactory Logger
 
-<div class="jelineksoft-input" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
+<div class="jelineksoft-input" >
     <div class="jelineksoft-input-label">@Label</div>
     <div class="jelineksoft-input-row">
-        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none"
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))"
                class="jelineksoft-input-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
         <div>@HasFocusIn.ToString()</div>
         @if (ShowButtonBackspace)
