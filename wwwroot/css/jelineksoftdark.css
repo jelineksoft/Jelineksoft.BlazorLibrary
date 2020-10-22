@@ -324,12 +324,10 @@ img {
 .jelineksoft-virtualkeyboard-btn-number {
   width: auto;
   font: normal 100% 'JetBrains Mono';
-  padding: 0.3rem;
 }
 .jelineksoft-virtualkeyboard-btn-alpha {
   width: auto;
   font: normal 100% 'JetBrains Mono';
-  padding: 0.3rem;
 }
 .jelineksoft-virtualkeyboard-btn-custom {
   width: auto;
@@ -337,7 +335,6 @@ img {
 .jelineksoft-virtualkeyboard-btn-system {
   width: auto;
   font: normal 100% 'JetBrains Mono';
-  padding: 0.3rem;
 }
 .jelineksoft-number {
   position: relative;

@@ -13,7 +13,7 @@
     <div class="jelineksoft-input-row">
         <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))"
                class="jelineksoft-input-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
-        <div>@HasFocusIn.ToString()</div>
+        @* <div>@HasFocusIn.ToString()</div> *@
         @if (ShowButtonBackspace)
         {
             var xT = "";
@@ -28,13 +28,13 @@
                 <i class="fa fa-cut"/>
             </button>
         }
-        @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
+        @if (ShowButtonOpen )
         {
             <button tabindex="-1" class="jelineksoft-input-button" @onclick="OpenDropDownHandler">
                 <i class="fa fa-ellipsis-h"/>
             </button>
         }
-        @if (ShowButtonOpen)
+        @if (ShowButtonOK)
         {
             var xT = "";
             <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter))">
@@ -190,7 +190,7 @@
     public bool ShowButtonClear { get; set; } = true;
 
     [Parameter]
-    public bool ShowButtonOpen { get; set; } = true;
+    public bool ShowButtonOpen { get; set; } = false;
     [Parameter]
     public bool ShowButtonOK { get; set; } = true;
     [Parameter]
