@@ -146,7 +146,7 @@
         }
         set
         {
-            if (HasFocusIn || IsOpen)
+            if (HasFocusIn || IsOpen )
             {
                 if (xText != value)
                 {
@@ -156,12 +156,18 @@
                     FilterItems();
                     LogT("Text property", "Call OnTextChanged event");
                     OnTextChanged.InvokeAsync(xText);
+                    TextChanged.InvokeAsync(xText);
                 }
             }
             else
             {
                 LogT("Text property", "Set TextSelectedValue = {value}");
                 TextSelectedValue = value;
+                if (value != null)
+                {
+                    if (xText == null) xText = value;
+                    if (xText.Length == 0) xText = value;
+                }
             }
         }
     }
@@ -289,10 +295,10 @@
     }
 
     [Parameter]
-    public Func<object, string, bool> FilterItemMethod { get; set; }
+    public Func<object, string, bool> FilterItemMethod { get; set; } = null;
 
     [Parameter]
-    public Func<object, string> SelectedValueTextMethod { get; set; }
+    public Func<object, string> SelectedValueTextMethod { get; set; } = null;
 
     [Parameter]
     public EventCallback<ButtonOkClickEventValue> OnButtonOKClick { get; set; }
@@ -300,6 +306,8 @@
     [Parameter]
     public EventCallback<object> OnFocusOutHandler { get; set; }
 
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
     [Parameter]
     public EventCallback<object> OnTextChanged { get; set; }
 
@@ -355,6 +363,18 @@
         if (!isInitialized) return;
 
         LogT("FilterItems", $"Text={xText}");
+
+        if (SelectedValueTextMethod == null)
+        {
+            LogT("FilterItems", $"SelectedValueTextMethod is NULL - set value to user text.");
+            SetSelectedItem(xText);
+            return;
+        }
+        else
+        {
+            LogT("FilterItems", $"SelectedValueTextMethod is NOT NULL.");
+        }
+        
         if (Items == null)
         {
             LogT("FilterItems", $"Items are null.");
@@ -544,7 +564,7 @@
         {
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc:
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear:
-                this.xText = "";
+                Text = "";
                 SetSelectedItem(null);
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del:
