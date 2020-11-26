@@ -319,14 +319,16 @@
 
     public class ButtonOkClickEventValue
     {
-        public ButtonOkClickEventValue(JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum key, object item)
+        public ButtonOkClickEventValue(JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum key, object item, string xText)
         {
             KeyFireEvent = key;
             SelectedItem = item;
+            InputText = xText;
         }
 
         public object SelectedItem { get; set; }
         public JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum KeyFireEvent { get; set; }
+        public string InputText { get; set; }
     }
 
     private int ItemStartIndex { get; set; } = 0;
@@ -576,12 +578,12 @@
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
                 IsOpen = false;
                 StateHasChanged();
-                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem));
+                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem, xText));
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
                 IsOpen = false;
                 StateHasChanged();
-                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem));
+                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem,xText));
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Space:
                 this.Text = this.Text + " ";
@@ -615,6 +617,11 @@
 
     public void Dispose()
     {
+    }
+
+    public string GetInputText()
+    {
+        return xText;
     }
 
 

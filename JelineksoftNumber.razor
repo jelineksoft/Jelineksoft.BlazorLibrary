@@ -221,7 +221,7 @@
                         IsOpen = false;
                         if (KeyEnterCallOK)
                         {
-                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value));
+                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
                         }
                         StateHasChanged();
                         break;
@@ -229,7 +229,7 @@
                         IsOpen = false;
                         if (KeyTabCallOK)
                         {
-                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value));
+                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
                         }
                         StateHasChanged();
                     break;
