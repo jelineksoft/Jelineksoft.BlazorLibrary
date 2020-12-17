@@ -265,7 +265,7 @@
             if (xItems != value)
             {
                 xItems = value;
-                ResetData();
+                //ResetData();
             }
         }
     }
@@ -349,33 +349,46 @@
     protected override void OnParametersSet()
     {
         isInitialized = true;
-        FilterItems();
+        FilterItems(true);
         base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+        base.OnAfterRender(firstRender);
     }
 
     public void FilterData()
     {
-        FilterItems();
+        xLastFilteredString = DateTime.Now.ToString();
+        FilterItems(true);
     }
     
     private string xLastFilteredString = DateTime.Now.ToString();
 
-    private void FilterItems()
+    bool xStopFiltering = false;
+    bool xIsFiltering = false;
+    
+    private void FilterItems(bool xForce = false)
     {
         if (!isInitialized) return;
 
         LogT("FilterItems", $"Text={xText}");
 
-        if (SelectedValueTextMethod == null)
-        {
-            LogT("FilterItems", $"SelectedValueTextMethod is NULL - set value to user text.");
-            SetSelectedItem(xText);
-            return;
-        }
-        else
-        {
-            LogT("FilterItems", $"SelectedValueTextMethod is NOT NULL.");
-        }
+        // if (SelectedValueTextMethod == null)
+        // {
+        //     LogT("FilterItems", $"SelectedValueTextMethod is NULL - set value to user text.");
+        //     SetSelectedItem(xText);
+        //     return;
+        // }
+        // else
+        // {
+        //     LogT("FilterItems", $"SelectedValueTextMethod is NOT NULL.");
+        // }
+
         
         if (Items == null)
         {
@@ -391,19 +404,38 @@
             return;
         }
 
-        if (xText.Length >= ItemsFilterStartLen)
+        if ((xText.Length >= ItemsFilterStartLen) || xForce)
         {
-            if (xText == xLastFilteredString)
+            if ((xText == xLastFilteredString) && (xForce == false))
             {
                 LogT("FilterItems", $"Text is same as last filtered text. Return with no filter items.");
                 return;
             }
 
+            if (xIsFiltering)
+            {
+                xStopFiltering = true;
+                var xCnt = 0;
+                while (xStopFiltering)
+                {
+                    System.Threading.Thread.Sleep(100);
+                    xCnt++;
+                    LogT( "FilterData","Waiting to stop filtering...");
+                    if (xCnt > 20)
+                    {
+                        LogT( "FilterData","Return form waiting stop filtering...");
+                        return;
+                    }
+                }
+            }
+            xIsFiltering = true;
+            
             var xItemsToFilter = Items;
-            if (xLastFilteredString.Length < xText.Length)
+            if ((xLastFilteredString.Length < xText.Length) && (xForce ==false))
             {
                 if (ItemsFiltered != null)
-                    if (ItemsFiltered.Count > 0)
+    //Zruseni filtrovani pokud nejsou polozky k filtrovani                
+    //if (ItemsFiltered.Count > 0)
                     {
                         LogT("FilterItems", $"Filtering will be from filtered items.");
                         xItemsToFilter = ItemsFiltered;
@@ -412,6 +444,12 @@
             ItemsFiltered = new List<object>();
             foreach (var item in xItemsToFilter)
             {
+                if (xStopFiltering)
+                {
+                    xIsFiltering = false;
+                    xStopFiltering = false;
+                    return;
+                }
                 LogT("FilterItems", $"Call FilterItemMethod.");
                 var xAdd = FilterItemMethod(item, xText);
                 LogT("FilterItems", $"Return {xAdd} from FilterItemMethod.");
@@ -428,6 +466,7 @@
                     }
                 }
             }
+            xIsFiltering = false;
             if (AutoSelectItem)
             {
                 if (ItemsFiltered.Count == 1)
@@ -497,7 +536,7 @@
             if (HasFocusIn)
             {
                 IsOpen = true;
-                FilterItems();
+               // FilterItems();
             }
         }
         if (!HasFocusIn)
@@ -624,7 +663,23 @@
         return xText;
     }
 
+    public void SetInputText(string txt)
+    {
+        xText = txt;
+    }
 
+    public void PopUpOpen()
+    {
+        IsOpen = true;
+        StateHasChanged();
+    }
+    public void PopUpClose()
+    {
+        IsOpen = false;
+        StateHasChanged();
+    }
+    
+    
 }
 
 <style>

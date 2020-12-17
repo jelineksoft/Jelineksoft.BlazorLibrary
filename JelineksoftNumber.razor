@@ -66,7 +66,7 @@
     [Parameter]
     public string Label { get; set; }
 
-    private string xText = "";
+    private string xText = "0";
 
     [Parameter]
     public string Text
@@ -84,6 +84,10 @@
                     LogT("Text property", "Call OnTextChanged event");
                     OnTextChanged.InvokeAsync(xText);
                     ValueChanged.InvokeAsync(xD);
+                }
+                else
+                {
+                    LogT("Text property", $"Value {value} is not valid decimal number.");
                 }
             }
         }
@@ -105,8 +109,15 @@
         {
             if (value != null)
             {
-                LogT("Text property", "Call OnTextChanged event");
-                Text = value.ToString();
+                decimal xD = 0;
+                if (decimal.TryParse(Text, out xD))
+                {
+                    if (xD != value.Value)
+                    {
+                        LogT("Text property", "Call OnTextChanged event");
+                        Text = value.ToString();
+                    }
+                }
             }
         }
     }
