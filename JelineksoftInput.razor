@@ -349,7 +349,7 @@
     protected override void OnParametersSet()
     {
         isInitialized = true;
-        FilterItems(true);
+        //FilterItems(true);
         base.OnParametersSet();
     }
 
@@ -357,6 +357,7 @@
     {
         if (firstRender)
         {
+            FilterItems(true);
         }
         base.OnAfterRender(firstRender);
     }
@@ -444,12 +445,12 @@
             ItemsFiltered = new List<object>();
             foreach (var item in xItemsToFilter)
             {
-                if (xStopFiltering)
-                {
-                    xIsFiltering = false;
-                    xStopFiltering = false;
-                    return;
-                }
+                // if (xStopFiltering)
+                // {
+                //     xIsFiltering = false;
+                //     xStopFiltering = false;
+                //     return;
+                // }
                 LogT("FilterItems", $"Call FilterItemMethod.");
                 var xAdd = FilterItemMethod(item, xText);
                 LogT("FilterItems", $"Return {xAdd} from FilterItemMethod.");
