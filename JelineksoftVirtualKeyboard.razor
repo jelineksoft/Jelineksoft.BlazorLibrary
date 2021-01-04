@@ -83,12 +83,21 @@
         }
         @if (KeyboardShowClear)
         {
-            var xT = " CLR ";
+            var xT = "";
             <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system"
                     @onclick="(() => KeyboardButtonClick(xT, KeyboardButtonTypeEnum.Clear))">
                 @xT
+                <i class="fa fa-cut"/>
             </button>
         }
+                @if (KeyboardShowBackspace)
+                {
+                    var xT = "";
+                    <button tabindex="-1" class="jelineksoft-virtualkeyboard-btn-system" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del))">
+                        <i class="fa fa-backspace"/>
+                    </button>
+                }
+
         @if (KeyboardShowEnter)
         {
             var xT = " ENTER ";
@@ -158,6 +167,9 @@
     public bool KeyboardShowClear { get; set; } = true;
 
     [Parameter]
+    public bool KeyboardShowBackspace { get; set; } = true;
+
+    [Parameter]
     public bool KeyboardShowAt { get; set; } = false;
 
     [Parameter]
@@ -199,7 +211,8 @@
         Tab,
         Clear,
         Space,
-        Esc
+        Esc,
+        SelectedItemDefault
     }
 
 

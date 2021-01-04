@@ -183,6 +183,13 @@ img {
 .jelineksoft-input-input {
   width: 100%;
 }
+.jelineksoft-input-input-selected {
+  width: 100%;
+  font-size: 1.2rem;
+  height: 100%;
+  display: block;
+  align-self: center;
+}
 .jelineksoft-input-button {
   width: auto;
 }

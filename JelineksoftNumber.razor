@@ -8,8 +8,16 @@
 <div class="jelineksoft-number" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
     <div class="jelineksoft-number-label">@Label</div>
     <div class="jelineksoft-number-row">
-        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none"
-               class="jelineksoft-number-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none" @ref="refInputBox"
+               class="jelineksoft-number-input" autocomplete="off" @onkeyup="InputBoxOnKeyDownHandler"/>
+        @{
+            decimal xD;
+            bool xOk = decimal.TryParse(this.Text, out xD);
+            if (xOk == false)
+            {
+                <div class="w3-red"><i class="fa fa-exclamation" /></div>
+            }
+        }
         @if (ShowButtonBackspace)
         {
             var xT = "";
@@ -88,6 +96,7 @@
                 else
                 {
                     LogT("Text property", $"Value {value} is not valid decimal number.");
+                    StateHasChanged();
                 }
             }
         }
@@ -109,15 +118,12 @@
         {
             if (value != null)
             {
-                decimal xD = 0;
-                if (decimal.TryParse(Text, out xD))
-                {
-                    if (xD != value.Value)
-                    {
-                        LogT("Text property", "Call OnTextChanged event");
-                        Text = value.ToString();
-                    }
-                }
+                LogT("Text property", "Call OnTextChanged event");
+                Text = value.ToString();
+            }
+            else
+            {
+                Text = "0";
             }
         }
     }
@@ -157,13 +163,24 @@
     public EventCallback<string> OnTextChanged { get; set; }
     [Parameter]
     public EventCallback<decimal> ValueChanged { get; set; }
-    
+
     [Parameter]
     public EventCallback<JelineksoftInput.ButtonOkClickEventValue> OnButtonOKClick { get; set; }
 
 
     bool HasFocusIn = false;
     bool IsOpen = false;
+
+    ElementReference refInputBox;
+
+    public async Task FocusAsync()
+    {
+        await Task.Delay(500);
+        if (refInputBox.Context != null)
+        {
+            await refInputBox.FocusAsync();
+        }
+    }
 
     private bool ShowKeyboardUI()
     {
@@ -178,7 +195,7 @@
         }
         return xShow;
     }
-    
+
     private string GetIsOpenClass()
     {
         return (IsOpen ? "jelineksoft-number-isopen" : "jelineksoft-number-isclose");
@@ -222,30 +239,31 @@
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear:
                 Text = "0";
                 break;
-                case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del:
-                    if (Text.Length > 0)
-                    {
-                        Text = Text.Substring(0, Text.Length - 1);
-                    }
-                    break;
-                    case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
-                        IsOpen = false;
-                        if (KeyEnterCallOK)
-                        {
-                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
-                        }
-                        StateHasChanged();
-                        break;
-                    case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
-                        IsOpen = false;
-                        if (KeyTabCallOK)
-                        {
-                            OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
-                        }
-                        StateHasChanged();
-                    break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del:
+                if (Text.Length > 0)
+                {
+                    Text = Text.Substring(0, Text.Length - 1);
+                }
+                break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
+                IsOpen = false;
+                if (KeyEnterCallOK)
+                {
+                    OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
+                }
+                StateHasChanged();
+                break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
+                IsOpen = false;
+                if (KeyTabCallOK)
+                {
+                    OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
+                }
+                StateHasChanged();
+                break;
             default:
                 Text = Text + key;
+                StateHasChanged();
                 break;
         }
     }
@@ -264,7 +282,7 @@
                 KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab);
                 break;
             default:
-               // KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
+                // KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
                 break;
         }
     }

@@ -5,49 +5,61 @@
 @using System.Threading
 @using Jelineksoft.BlazorLibrary.Helpers
 @using Jelineksoft.Logging
-@implements IDisposable
 @inject ILogFactory Logger
 
-<div class="jelineksoft-input" >
+<div class="jelineksoft-input">
     <div class="jelineksoft-input-label">@Label</div>
     <div class="jelineksoft-input-row">
-        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))"
-               class="jelineksoft-input-input" autocomplete="off" @onkeydown="InputBoxOnKeyDownHandler"/>
-        @* <div>@HasFocusIn.ToString()</div> *@
-        @if (ShowButtonBackspace)
-        {
-            var xT = "";
-            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del))">
-                <i class="fa fa-backspace"/>
-            </button>
+        @{
+            string xHide = "";
+            if ((SelectedItem != null) && (IsOpen == false))
+            {
+                xHide = "w3-hide";
+            }
+                <input type="text"  inputmode="none" class="jelineksoft-input-input @xHide" @ref="refInputBox"
+                       @bind-value="Text" @bind-value:event="onchange" autocomplete="off" 
+                       @onkeyup="InputBoxOnKeyUpHandler" 
+                       @onfocusin="OnFocusInHandler"
+                />
         }
-        @if (ShowButtonClear)
-        {
-            var xT = "";
-            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear))">
-                <i class="fa fa-cut"/>
-            </button>
-        }
-        @if (ShowButtonOpen )
-        {
-            <button tabindex="-1" class="jelineksoft-input-button" @onclick="OpenDropDownHandler">
-                <i class="fa fa-ellipsis-h"/>
-            </button>
-        }
-        @if (ShowButtonOK)
-        {
-            var xT = "";
-            <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter))">
-                @if (ButtonOkString.Length > 0)
-                {
-                    @ButtonOkString
-                }
-                else
-                {
-                    <i class="fa fa-thumbs-up"/>
-                }
 
-            </button>
+        @if ((SelectedItem != null) && (IsOpen == false))
+        {
+            <div class="jelineksoft-input-input-selected">@TextSelectedValue</div>
+            if (ShowButtonClear)
+            {
+                var xT = "";
+                <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.SelectedItemDefault))">
+                    <i class="fa fa-times"/>
+                </button>
+            }
+        }
+        
+        @if ((SelectedItem == null) || (IsOpen == true))
+        {
+            
+            @if (ShowButtonOpen)
+            {
+                <button tabindex="-1" class="jelineksoft-input-button" @onclick="OpenDropDownHandler">
+                    <i class="fa fa-ellipsis-h"/>
+                </button>
+            }
+        
+        if (ShowButtonOK)
+            {
+                var xT = "";
+                <button tabindex="-1" class="jelineksoft-input-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter))">
+                    @if (ButtonOkString.Length > 0)
+                    {
+                        @ButtonOkString
+                    }
+                    else
+                    {
+                        <i class="fa fa-thumbs-up"/>
+                    }
+
+                </button>
+            }
         }
     </div>
 
@@ -56,8 +68,7 @@
         <div class="jelineksoft-input-dropdown">
             @if (ShowKeyboardUI())
             {
-                <JelineksoftVirtualKeyboard @ref="Keyboard" OnKeyClick="@VirtualKbClick" ></JelineksoftVirtualKeyboard>
-            }
+                <JelineksoftVirtualKeyboard @ref="Keyboard" OnKeyClick="@VirtualKbClick"></JelineksoftVirtualKeyboard>            }
 
             @HeaderContent
             <table class="jelineksoft-input-table">
@@ -89,11 +100,11 @@
                             }
                             if (TableRowContent != null)
                             {
-                                <tr tabindex="-1" @onkeydown="@InputBoxOnKeyDownHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@TableRowContent.Invoke(item)</tr>
+                                <tr tabindex="-1" @onkeyup="@InputBoxOnKeyUpHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@TableRowContent.Invoke(item)</tr>
                             }
                             else
                             {
-                                <tr tabindex="-1" @onkeydown="InputBoxOnKeyDownHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@item.ToString()</tr>
+                                <tr tabindex="-1" @onkeyup="InputBoxOnKeyUpHandler" class="@xClass" @onclick="@(() => { var xO = item; Console.WriteLine(xO); SetSelectedItem(xO); })">@item.ToString()</tr>
                             }
                         }
                         xI++;
@@ -112,7 +123,7 @@
                             @for (var xPg = 0; xPg < xPgs; xPg++)
                             {
                                 var xxPage = (xPg) * PageSize;
-                                <button tabindex="-1"  class="jelineksoft-input-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
+                                <button tabindex="-1" class="jelineksoft-input-btn-page" @onclick="(() => { ItemStartIndex = xxPage; StateHasChanged();})">@(xPg + 1)</button>
                             }
                         </div>
                     }
@@ -138,36 +149,19 @@
     {
         get
         {
-            if (HasFocusIn || IsOpen)
-            {
-                return xText;
-            }
-            return TextSelectedValue;
+            return xText;
         }
         set
         {
-            if (HasFocusIn || IsOpen )
+            if (xText != value)
             {
-                if (xText != value)
-                {
-                    LogT("Text property", $"Set xText value={value}");
-                    xText = value;
-                    LogT("Text property", "Call FilterItems");
-                    FilterItems();
-                    LogT("Text property", "Call OnTextChanged event");
-                    OnTextChanged.InvokeAsync(xText);
-                    TextChanged.InvokeAsync(xText);
-                }
-            }
-            else
-            {
-                LogT("Text property", "Set TextSelectedValue = {value}");
-                TextSelectedValue = value;
-                if (value != null)
-                {
-                    if (xText == null) xText = value;
-                    if (xText.Length == 0) xText = value;
-                }
+                LogT("Text property", $"Set xText value={value}");
+                xText = value;
+                LogT("Text property", "Call FilterItems");
+                FilterItems();
+                LogT("Text property", "Call OnTextChanged event");
+                OnTextChanged.InvokeAsync(xText);
+                TextChanged.InvokeAsync(xText);
             }
         }
     }
@@ -197,11 +191,13 @@
 
     [Parameter]
     public bool ShowButtonOpen { get; set; } = false;
+
     [Parameter]
     public bool ShowButtonOK { get; set; } = true;
+
     [Parameter]
     public string ButtonOkString { get; set; } = "OK";
-    
+
 
     [Parameter]
     public bool AutoOpenDropdownWhenFocus { get; set; } = false;
@@ -228,19 +224,17 @@
     [Parameter]
     public string KeyboardCustomKeys
     {
-        get { return Keyboard.KeyboardCustomKeys;}
+        get { return Keyboard.KeyboardCustomKeys; }
         set { Keyboard.KeyboardCustomKeys = value; }
-    } 
+    }
 
     [Parameter]
     public string KeyboardCustomKeysSeparator
     {
-        get { return Keyboard.KeyboardCustomKeysSeparator;}
+        get { return Keyboard.KeyboardCustomKeysSeparator; }
         set { Keyboard.KeyboardCustomKeysSeparator = value; }
-    } 
+    }
 
-    
-    
 
     [Parameter]
     public RenderFragment HeaderContent { get; set; }
@@ -304,10 +298,8 @@
     public EventCallback<ButtonOkClickEventValue> OnButtonOKClick { get; set; }
 
     [Parameter]
-    public EventCallback<object> OnFocusOutHandler { get; set; }
-
-    [Parameter]
     public EventCallback<string> TextChanged { get; set; }
+
     [Parameter]
     public EventCallback<object> OnTextChanged { get; set; }
 
@@ -337,29 +329,46 @@
 
     public bool IsOpen { get; set; } = false;
     public bool HasFocusIn { get; set; } = false;
+    private ElementReference refInputBox;
 
 
     protected override void OnInitialized()
     {
-    //Items.CollectionChanged += (sender, args) => { StateHasChanged(); };
         Console.WriteLine("OnInitialized.");
+
+        isInitialized = true;
+
         base.OnInitialized();
     }
 
     protected override void OnParametersSet()
     {
-        isInitialized = true;
-        //FilterItems(true);
         base.OnParametersSet();
+    }
+
+    protected override bool ShouldRender()
+    {
+        return isInitialized;
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
+            
+            Console.WriteLine("FirstRender.");
             FilterItems(true);
         }
         base.OnAfterRender(firstRender);
+    }
+
+    public async Task FocusAsync()
+    {
+        await Task.Delay(500);
+        if (refInputBox.Context != null)
+        {
+           await refInputBox.FocusAsync();
+        }
     }
 
     public void FilterData()
@@ -367,12 +376,12 @@
         xLastFilteredString = DateTime.Now.ToString();
         FilterItems(true);
     }
-    
+
     private string xLastFilteredString = DateTime.Now.ToString();
 
     bool xStopFiltering = false;
     bool xIsFiltering = false;
-    
+
     private void FilterItems(bool xForce = false)
     {
         if (!isInitialized) return;
@@ -390,7 +399,7 @@
         //     LogT("FilterItems", $"SelectedValueTextMethod is NOT NULL.");
         // }
 
-        
+
         if (Items == null)
         {
             LogT("FilterItems", $"Items are null.");
@@ -421,36 +430,30 @@
                 {
                     System.Threading.Thread.Sleep(100);
                     xCnt++;
-                    LogT( "FilterData","Waiting to stop filtering...");
+                    LogT("FilterData", "Waiting to stop filtering...");
                     if (xCnt > 20)
                     {
-                        LogT( "FilterData","Return form waiting stop filtering...");
+                        LogT("FilterData", "Return form waiting stop filtering...");
                         return;
                     }
                 }
             }
             xIsFiltering = true;
-            
+
             var xItemsToFilter = Items;
-            if ((xLastFilteredString.Length < xText.Length) && (xForce ==false))
+            if ((xLastFilteredString.Length < xText.Length) && (xForce == false))
             {
                 if (ItemsFiltered != null)
-    //Zruseni filtrovani pokud nejsou polozky k filtrovani                
-    //if (ItemsFiltered.Count > 0)
-                    {
-                        LogT("FilterItems", $"Filtering will be from filtered items.");
-                        xItemsToFilter = ItemsFiltered;
-                    }
+                //Zruseni filtrovani pokud nejsou polozky k filtrovani                
+                //if (ItemsFiltered.Count > 0)
+                {
+                    LogT("FilterItems", $"Filtering will be from filtered items.");
+                    xItemsToFilter = ItemsFiltered;
+                }
             }
             ItemsFiltered = new List<object>();
             foreach (var item in xItemsToFilter)
             {
-                // if (xStopFiltering)
-                // {
-                //     xIsFiltering = false;
-                //     xStopFiltering = false;
-                //     return;
-                // }
                 LogT("FilterItems", $"Call FilterItemMethod.");
                 var xAdd = FilterItemMethod(item, xText);
                 LogT("FilterItems", $"Return {xAdd} from FilterItemMethod.");
@@ -515,7 +518,7 @@
 
     private string GetIsOpenClass()
     {
-    //if (AutoOpenDropdownWhenFocus) return "jelineksoft-input-isopen";
+        //if (AutoOpenDropdownWhenFocus) return "jelineksoft-input-isopen";
         return (IsOpen ? "jelineksoft-input-isopen" : "jelineksoft-input-isclose");
     }
 
@@ -527,7 +530,7 @@
         StateHasChanged();
     }
 
-  
+
     private void ChangeFocusIn(bool hasFocus)
     {
         LogD("ChangeFocusIn", $"Has focus {hasFocus}.");
@@ -537,15 +540,9 @@
             if (HasFocusIn)
             {
                 IsOpen = true;
-               // FilterItems();
             }
         }
-        if (!HasFocusIn)
-        {
-            LogT("ChangeFocusIn", $"Invoke OnFocusOut.");
-            OnFocusOutHandler.InvokeAsync(SelectedItem);
-        }
-        StateHasChanged();
+        //StateHasChanged();
     }
 
     private void LogT(string subject, string desc)
@@ -574,17 +571,19 @@
         FilterItems();
     }
 
-    private void InputBoxOnKeyDownHandler(KeyboardEventArgs obj)
+    private void InputBoxOnKeyUpHandler(KeyboardEventArgs obj)
     {
         if (obj != null)
         {
             LogT("KeyPress", $"KeyPress code: {obj.Code} key:{obj.Key}");
+            //Console.WriteLine($"KeyPress code: {obj.Code} key:{obj.Key}");
             switch (obj.Code)
             {
                 case "Escape":
                     KeyboardButtonClick("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc);
                     break;
                 case "Enter":
+                case "NumpadEnter":
                     KeyboardButtonClick("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter);
                     break;
                 case "Tab":
@@ -617,17 +616,25 @@
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
                 IsOpen = false;
+                ChangeFocusIn(false);
                 StateHasChanged();
                 OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem, xText));
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
                 IsOpen = false;
+                ChangeFocusIn(false);
                 StateHasChanged();
-                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem,xText));
+                OnButtonOKClick.InvokeAsync(new ButtonOkClickEventValue(type, SelectedItem, xText));
                 break;
             case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Space:
                 this.Text = this.Text + " ";
                 break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.SelectedItemDefault:
+                SetSelectedItem(null);
+                StateHasChanged();
+                FocusAsync();
+                break;
+
             default:
                 this.Text = this.Text + keys;
                 break;
@@ -674,13 +681,24 @@
         IsOpen = true;
         StateHasChanged();
     }
+
     public void PopUpClose()
     {
         IsOpen = false;
         StateHasChanged();
     }
-    
-    
+
+    private void OnFocusInHandler()
+    {
+        ChangeFocusIn(true);
+        //Console.WriteLine("Banik pico...");
+    }
+
+    private void OnFocusOutHandler(FocusEventArgs obj)
+    {
+        ChangeFocusIn(false);
+    }
+
 }
 
 <style>
