@@ -17,7 +17,7 @@
                 xHide = "w3-hide";
             }
                 <input type="text"  inputmode="none" class="jelineksoft-input-input @xHide" @ref="refInputBox"
-                       @bind-value="Text" @bind-value:event="onchange" autocomplete="off" 
+                       @bind-value="Text" @bind-value:event="oninput" autocomplete="off" 
                        @onkeyup="InputBoxOnKeyUpHandler" 
                        @onfocusin="OnFocusInHandler"
                 />
@@ -158,7 +158,7 @@
                 LogT("Text property", $"Set xText value={value}");
                 xText = value;
                 LogT("Text property", "Call FilterItems");
-                FilterItems();
+                FilterItems(false);
                 LogT("Text property", "Call OnTextChanged event");
                 OnTextChanged.InvokeAsync(xText);
                 TextChanged.InvokeAsync(xText);
@@ -259,7 +259,8 @@
             if (xItems != value)
             {
                 xItems = value;
-                //ResetData();
+                xHasFilteredItems = false;
+    //ResetData();
             }
         }
     }
@@ -373,18 +374,21 @@
 
     public void FilterData()
     {
-        xLastFilteredString = DateTime.Now.ToString();
+        xLastFilteredString = "";
+        xHasFilteredItems = false;
         FilterItems(true);
     }
 
-    private string xLastFilteredString = DateTime.Now.ToString();
+    private string xLastFilteredString = "";
 
     bool xStopFiltering = false;
     bool xIsFiltering = false;
+    bool xHasFilteredItems = false;
 
     private void FilterItems(bool xForce = false)
     {
         if (!isInitialized) return;
+        Console.WriteLine($"FilterItems - xText: {xText}");
 
         LogT("FilterItems", $"Text={xText}");
 
@@ -404,6 +408,7 @@
         {
             LogT("FilterItems", $"Items are null.");
             ItemsFiltered = null;
+            xHasFilteredItems = false;
             SetSelectedItem(null);
             return;
         }
@@ -443,12 +448,14 @@
             var xItemsToFilter = Items;
             if ((xLastFilteredString.Length < xText.Length) && (xForce == false))
             {
-                if (ItemsFiltered != null)
-                //Zruseni filtrovani pokud nejsou polozky k filtrovani                
-                //if (ItemsFiltered.Count > 0)
+                 //Zruseni filtrovani pokud nejsou polozky k filtrovani                
+                if (xHasFilteredItems)
                 {
-                    LogT("FilterItems", $"Filtering will be from filtered items.");
-                    xItemsToFilter = ItemsFiltered;
+                    if (ItemsFiltered != null)
+                    {
+                        LogT("FilterItems", $"Filtering will be from filtered items. xLastFilteredString: {xLastFilteredString} xText: {xText} xForce {xForce} ItemsFiltered.Count {ItemsFiltered}");
+                        xItemsToFilter = ItemsFiltered;
+                    }
                 }
             }
             ItemsFiltered = new List<object>();
@@ -470,6 +477,7 @@
                     }
                 }
             }
+            xHasFilteredItems = true;
             xIsFiltering = false;
             if (AutoSelectItem)
             {
@@ -483,13 +491,15 @@
         }
         else
         {
-            ItemsFiltered = new List<object>();
-            xLastFilteredString = DateTime.Now.Ticks.ToString();
+            ItemsFiltered = null;
+            xLastFilteredString = "";
+            xHasFilteredItems = false;
             if (HasFocusIn)
             {
                 SetSelectedItem(null);
             }
         }
+        StateHasChanged();
     }
 
     public void SetSelectedItem(object item, bool closePopUp = false)
@@ -571,7 +581,8 @@
         SetSelectedItem(null);
         xText = "";
         ItemStartIndex = 0;
-        xLastFilteredString = DateTime.Now.ToString();
+        xLastFilteredString = "";
+        xHasFilteredItems = false;
         FilterItems();
     }
 
@@ -595,6 +606,7 @@
                     break;
             }
         }
+       // FilterData();
     }
 
     public void KeyboardButtonClick(string keys)
