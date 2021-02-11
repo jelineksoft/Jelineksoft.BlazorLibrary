@@ -163,3 +163,9 @@ img {
 .jsf-font-bigxxx {
   font-size: 3rem;
 }
+.jsf-table-scrollable {
+  display: block;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+}
