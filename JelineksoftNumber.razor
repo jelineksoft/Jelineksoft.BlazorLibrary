@@ -8,7 +8,7 @@
 <div class="jelineksoft-number" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
     <div class="jelineksoft-number-label">@Label</div>
     <div class="jelineksoft-number-row">
-        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="none" @ref="refInputBox"
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="@InputMode" @ref="refInputBox"
                class="jelineksoft-number-input" autocomplete="off" @onkeyup="InputBoxOnKeyDownHandler"/>
         @{
             decimal xD;
@@ -128,6 +128,24 @@
         }
     }
 
+    private string _inputMode = String.Empty;
+
+    [Parameter]
+    public string InputMode
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(_inputMode))
+            {
+                return _inputMode;
+            }
+            else
+            {
+                return Configuration.DefaultInputMode;
+            }
+        }
+        set { _inputMode = value; }
+    }
 
     [Parameter]
     public bool KeyTabCallOK { get; set; } = true;

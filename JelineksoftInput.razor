@@ -16,7 +16,7 @@
             {
                 xHide = "w3-hide";
             }
-                <input type="text"  inputmode="none" class="jelineksoft-input-input @xHide" @ref="refInputBox"
+                <input type="text"  inputmode="@InputMode" class="jelineksoft-input-input @xHide" @ref="refInputBox"
                        @bind-value="Text" @bind-value:event="oninput" autocomplete="off" 
                        @onkeyup="InputBoxOnKeyUpHandler" 
                        @onfocusin="OnFocusInHandler"
@@ -181,6 +181,26 @@
                 OnTextSelectedValueChanged.InvokeAsync(xTextSelectedValue);
             }
         }
+    }
+    
+    
+    private string _inputMode = String.Empty;
+
+    [Parameter]
+    public string InputMode
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(_inputMode))
+            {
+                return _inputMode;
+            }
+            else
+            {
+                return Configuration.DefaultInputMode;
+            }
+        }
+        set { _inputMode = value; }
     }
 
     [Parameter]
