@@ -1,0 +1,621 @@
+﻿@using Jelineksoft.Logging
+@using System.Reflection.Emit
+@using System.Net.Mime
+@using Jelineksoft.BlazorLibrary.Helpers
+@using System.Net.Http.Headers
+@using Jelineksoft.BlazorLibrary.Bags
+@inject ILogFactory Logger
+
+<div class="jelineksoft-datetime" @onfocusin="(() => ChangeFocusIn(true))" @onfocusout="(() => ChangeFocusIn(false))">
+    <div class="jelineksoft-datetime-label">@Label</div>
+    <div class="jelineksoft-datetime-row">
+        <input type="text" id="@Id" @bind-value="@Text" @bind-value:event="oninput" inputmode="@InputMode" @ref="refInputBox"
+               class="jelineksoft-datetime-input" autocomplete="off" @onkeyup="InputBoxOnKeyDownHandler"/>
+        @{
+            DateTime xD;
+            bool xOk = DateTime.TryParse(this.Text, out xD);
+            if (xOk == false)
+            {
+                <div class="w3-red">
+                    <i class="fa fa-exclamation"/>
+                </div>
+            }
+        }
+        @if (ShowButtonBackspace)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-datetime-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Del))">
+                <i class="fa fa-backspace"/>
+            </button>
+        }
+        @if (ShowButtonCut)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-datetime-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear))">
+                <i class="fa fa-calendar-times"/>
+            </button>
+        }
+        @if (ShowButtonOpen && !AutoOpenDropdownWhenFocus)
+        {
+            <button tabindex="-1" class="jelineksoft-datetime-button" @onclick="OpenDropDownHandler">
+                <i class="fa fa-calendar-alt"/>
+            </button>
+        }
+        @if (ShowButtonOK)
+        {
+            var xT = "";
+            <button tabindex="-1" class="jelineksoft-datetime-button" @onclick="(() => KeyboardButtonClick(xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter))">
+                @if (ButtonOkText.Length > 0)
+                {
+                    @ButtonOkText
+                }
+                else
+                {
+                    <i class="fa fa-calendar-check"/>
+                }
+
+            </button>
+        }
+    </div>
+
+
+    <div class="@GetIsOpenClass()">
+        <div class="@ShowKeyboardUI()">
+            <div class="jelineksoft-datetime-dropdown">
+                <table>
+                    <tr>
+                        <td>
+                            <button class="btn" @onclick="() => { jpBag.SelectedDate = jpBag.SelectedDate.AddYears(-1);ChangeDate_RefreshData(); StateHasChanged();}">
+                                <i class="fa fa-angle-double-left"/>
+                            </button>
+                        </td>
+                        <td>@jpBag.SelectedDate.Year</td>
+                        <td>
+                            <button class="btn" @onclick="() => { jpBag.SelectedDate = jpBag.SelectedDate.AddYears(1); ChangeDate_RefreshData(); StateHasChanged();}">
+                                <i class="fa fa-angle-double-right"/>
+                            </button>
+                        </td>
+                        <td></td>
+                        <td>
+                            <button class="btn" @onclick="() => { jpBag.SelectedDate = jpBag.SelectedDate.AddMonths(-1); ChangeDate_RefreshData(); StateHasChanged();}">
+                                <i class="fa fa-calendar-minus"/>
+                            </button>
+                        </td>
+                        <td>@jpBag.SelectedDate.Month</td>
+                        <td>
+                            <button class="btn"@onclick="() => { jpBag.SelectedDate = jpBag.SelectedDate.AddMonths(1); ChangeDate_RefreshData(); StateHasChanged();}">
+                                <i class="fa fa-calendar-plus"/>
+                            </button>
+                        </td>
+                        @if (ShowTime)
+                        {
+                            <td style="width:5px"></td>
+                            <td colspan="5">
+                                <button @onclick="() => { jpPM = (jpPM>0) ? 0:12; StateHasChanged(); }" class="btn">Dop/Odp</button>
+                            </td>
+                        }
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>PO</td>
+                        <td>UT</td>
+                        <td>ST</td>
+                        <td>CT</td>
+                        <td>PA</td>
+                        <td>SO</td>
+                        <td>NE</td>
+                        @if (ShowTime)
+                        {
+                            <td style="width:5px"></td>
+                                            <td><button class="btnM @GetStyleMin(55)" @onclick="()=>SetMinute(55)" >55</button></td> 
+                            <td><button class="btnM @GetStyleMin(59)" @onclick="()=>SetMinute(59)" >59</button></td> 
+                            <td><button class="btnM @GetStyleMin(0)" @onclick="()=>SetMinute(0)" >0</button></td> 
+                            <td></td>
+                            <td><button class="btnM @GetStyleMin(5)" @onclick="()=>SetMinute(5)" >5</button></td> 
+                        }
+                    </tr>
+
+                    @{
+                        var xI = 0;
+                        while (xI < (6 * 7)-1)
+                        {
+                            var xDay = jpBag.Days[xI];
+                            switch (xI)
+                            {
+                                case 0:
+                                case 7:
+                                case 14:
+                                case 21:
+                                case 28:
+                                case 35:
+                                    @(new MarkupString("<tr>"))
+                                    break;
+                            }
+                            <td><button class="btnD @GetStyleDay(xDay)" @onclick="()=>SetDate(xDay)" >@xDay.Description</button></td> 
+                                                                                                                                
+                            switch (xI)
+                            {
+                                case 6:
+                                case 13:
+                                case 20:
+                                case 27:
+                                case 34:
+                                case 41:
+                                    if (ShowTime)
+                                    {
+                                        if (xI == 6)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td><button class="btnM @GetStyleMin(50)" @onclick="()=>SetMinute(50)" >50</button></td> 
+                                            <td><button class="btnH @GetStyleHour(11)" @onclick="()=>SetHour(11)" >@(11+jpPM)</button></td> 
+                                            <td><button class="btnH @GetStyleHour(12)" @onclick="()=>SetHour(12)" >@(12-jpPM)</button></td> 
+                                            <td><button class="btnH @GetStyleHour(1)" @onclick="()=>SetHour(1)" >@(1+jpPM)</button></td> 
+                                            <td><button class="btnM @GetStyleMin(10)" @onclick="()=>SetMinute(10)" >10</button></td> 
+                                        }
+                                        if (xI == 13)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td></td> 
+                                            <td><button class="btnH @GetStyleHour(10)" @onclick="()=>SetHour(10)" >@(10+jpPM)</button></td> 
+                                            <td></td> 
+                                            <td><button class="btnH @GetStyleHour(2)" @onclick="()=>SetHour(2)" >@(2+jpPM)</button></td> 
+                                            <td></td> 
+                                        }
+                                        if (xI == 20)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td><button class="btnM @GetStyleMin(45)" @onclick="()=>SetMinute(45)" >45</button></td> 
+                                            <td><button class="btnH @GetStyleHour(9)" @onclick="()=>SetHour(9)" >@(9+jpPM)</button></td> 
+                                            <td><i class="fa fa-clock"/></td> 
+                                            <td><button class="btnH @GetStyleHour(3)" @onclick="()=>SetHour(3)" >@(3+jpPM)</button></td> 
+                                            <td><button class="btnM @GetStyleMin(15)" @onclick="()=>SetMinute(15)" >15</button></td> 
+                                        }
+                                        if (xI == 27)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td></td> 
+                                            <td><button class="btnH @GetStyleHour(8)" @onclick="()=>SetHour(8)" >@(8+jpPM)</button></td> 
+                                            <td></td> 
+                                            <td><button class="btnH @GetStyleHour(4)" @onclick="()=>SetHour(4)" >@(4+jpPM)</button></td> 
+                                            <td></td> 
+                                        }
+                                        if (xI == 34)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td><button class="btnM @GetStyleMin(40)" @onclick="()=>SetMinute(40)" >40</button></td> 
+                                            <td><button class="btnH @GetStyleHour(7)" @onclick="()=>SetHour(7)" >@(7+jpPM)</button></td> 
+                                            <td><button class="btnH @GetStyleHour(6)" @onclick="()=>SetHour(6)" >@(6+jpPM)</button></td> 
+                                            <td><button class="btnH @GetStyleHour(5)" @onclick="()=>SetHour(5)" >@(5+jpPM)</button></td> 
+                                            <td><button class="btnM @GetStyleMin(20)" @onclick="()=>SetMinute(20)" >20</button></td> 
+                                        }
+                                        if (xI == 41)
+                                        {
+                                            <td style="width:5px"></td>
+                                            <td><button class="btnM @GetStyleMin(35)" @onclick="()=>SetMinute(35)" >35</button></td> 
+                                            <td></td> 
+                                            <td><button class="btnH @GetStyleMin(30)" @onclick="()=>SetMinute(30)" >@(30)</button></td> 
+                                            <td></td> 
+                                            <td><button class="btnM @GetStyleMin(25)" @onclick="()=>SetMinute(25)" >25</button></td> 
+                                        }
+
+                                        
+                                    }
+                                    @(new MarkupString("</tr>"))
+                                    break;
+
+                                default:
+                                    
+                                    break;
+                            }
+        
+                            xI++;
+                        }
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn {
+        background-color: transparent;
+        border: 0;
+        margin: 1px;
+        padding: 1px;
+    }
+    .btnH {
+        background-color: transparent;
+        border: 0;
+        font-weight: bold;
+        margin: 1px;
+        padding: 1px;
+    }
+    .btnM {
+        background-color: transparent;
+        border: 0;
+        font-weight: normal;
+        font-style: italic;
+        font-size: 0.8em;
+        margin: 1px;
+        padding: 1px;
+    }
+    .btnD {
+        background-color: transparent;
+        border: 0;    
+        margin: 1px;
+        padding: 1px;
+    }
+    .btnSel {
+        background-color: dodgerblue;
+        font-weight: bold;            
+    }
+    td {
+        text-align: center;
+        align-content: center;
+    }
+</style>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    private string xText = "0";
+    private Bag_DateTimeInput jpBag = new Bag_DateTimeInput();
+    private int jpPM = 12;
+
+    [Parameter]
+    public string Text
+    {
+        get { return xText; }
+        set
+        {
+            if (xText != value)
+            {
+                xText = value;
+                    LogT("Text property", "Call OnTextChanged event");
+                    OnTextChanged.InvokeAsync(xText);
+            }
+        }
+    }
+
+    [Parameter]
+    public DateTime? Value
+    {
+        get
+        {
+            return jpBag.SelectedDate;
+        }
+        set
+        {
+            if (value.HasValue)
+            {
+                jpBag.SelectedDateIsNull = false;
+                if (value != jpBag.SelectedDate)
+                {
+                    jpBag.SelectedDate = value.Value;
+                    ValueChanged.InvokeAsync(jpBag.SelectedDate);
+                }
+            }
+            else
+            {
+                jpBag.SelectedDateIsNull = true;
+            }
+            FormatSelectedDate();
+        }
+    }
+
+    private string _inputMode = String.Empty;
+
+    [Parameter]
+    public string InputMode
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(_inputMode))
+            {
+                return _inputMode;
+            }
+            else
+            {
+                return Configuration.DefaultInputMode;
+            }
+        }
+        set { _inputMode = value; }
+    }
+
+    [Parameter]
+    public bool KeyTabCallOK { get; set; } = true;
+
+    [Parameter]
+    public bool KeyEnterCallOK { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonBackspace { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonCut { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonOpen { get; set; } = true;
+
+    [Parameter]
+    public bool ShowButtonOK { get; set; } = true;
+
+    [Parameter]
+    public string ButtonOkText { get; set; } = "OK";
+
+    [Parameter]
+    public bool AutoOpenDropdownWhenFocus { get; set; } = false;
+
+    [Parameter]
+    public bool? KeyboardShow { get; set; } = null;
+
+    [Parameter]
+    public EventCallback<string> OnTextChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<DateTime?> ValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<JelineksoftInput.ButtonOkClickEventValue> OnButtonOKClick { get; set; }
+
+    [Parameter]
+    public bool ShowTime { get; set; } = true;
+
+    [Parameter]
+    public bool IsDateTo { get; set; } = false;
+
+    bool HasFocusIn = false;
+    bool IsOpen = false;
+
+    ElementReference refInputBox;
+
+    protected override void OnInitialized()
+    {
+        ChangeDate_RefreshData();
+        FormatSelectedDate();
+        base.OnInitialized();
+    }
+
+    public async Task FocusAsync()
+    {
+        await Task.Delay(500);
+        if (refInputBox.Context != null)
+        {
+            await refInputBox.FocusAsync();
+        }
+    }
+
+    private bool ShowKeyboardUI()
+    {
+        var xShow = false;
+        if (KeyboardShow.HasValue == false)
+        {
+            xShow = Configuration.ShowKeyboard;
+        }
+        else
+        {
+            xShow = KeyboardShow.Value;
+        }
+        return xShow;
+    }
+
+    private string GetIsOpenClass()
+    {
+        return (IsOpen ? "jelineksoft-datetime-isopen" : "jelineksoft-datetime-isclose");
+    }
+
+
+    private void LogT(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Trace(this, subject, desc);
+        }
+    }
+
+    private void LogD(string subject, string desc)
+    {
+        if (Logger != null)
+        {
+            Logger.Debug(this, subject, desc);
+        }
+    }
+
+    private void ChangeFocusIn(bool hasFocus)
+    {
+        LogD("ChangeFocusIn", $"Has focus {hasFocus}.");
+        HasFocusIn = hasFocus;
+        if (AutoOpenDropdownWhenFocus)
+        {
+            if (HasFocusIn)
+                IsOpen = true;
+        }
+        StateHasChanged();
+    }
+
+    private void KeyPress(string key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum type)
+    {
+        LogT("KeyPress", $"Key {key} type {type}.");
+        switch (type)
+        {
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc:
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Clear:
+                jpBag.SelectedDate = DateTime.Now;
+                break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter:
+                IsOpen = false;
+                if (KeyEnterCallOK)
+                {
+                    ParseTextToDateTime();
+                    OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
+                }
+                StateHasChanged();
+                break;
+            case JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab:
+                IsOpen = false;
+                if (KeyTabCallOK)
+                {
+                    ParseTextToDateTime();
+                    OnButtonOKClick.InvokeAsync(new JelineksoftInput.ButtonOkClickEventValue(type, Value, xText));
+                }
+                StateHasChanged();
+                break;
+            default:
+                Text = Text + key;
+                StateHasChanged();
+                break;
+        }
+    }
+
+    private void ParseTextToDateTime()
+    {
+        if (DateTime.TryParse(Text, out var xD))
+        {
+            jpBag.SelectedDate = xD;
+            FormatSelectedDate();
+        }
+        else
+        {
+            
+        }
+    }
+
+    private void InputBoxOnKeyDownHandler(KeyboardEventArgs obj)
+    {
+        switch (obj.Key)
+        {
+            case "Enter":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Enter);
+                break;
+            case "Escape":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Esc);
+                break;
+            case "Tab":
+                KeyPress("", JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Tab);
+                break;
+            default:
+    // KeyPress(obj.Key, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum.Default);
+                break;
+        }
+    }
+
+    private void VirtualKbClick(JelineksoftVirtualKeyboard.KeyClickEvent obj)
+    {
+        KeyPress(obj.Keys, obj.Type);
+    }
+
+    private void KeyboardButtonClick(string xT, JelineksoftVirtualKeyboard.KeyboardButtonTypeEnum del)
+    {
+        KeyPress(xT, del);
+    }
+
+    private void OpenDropDownHandler()
+    {
+        IsOpen = !IsOpen;
+        StateHasChanged();
+    }
+
+    private void ChangeDate_RefreshData()
+    {
+        foreach (var day in jpBag.Days)
+        {
+            day.Description = "";
+            day.Value = 0;
+            day.IsSelected = false;
+        }
+
+        var xI = 0;
+        var xDt = new DateTime(jpBag.SelectedDate.Year, jpBag.SelectedDate.Month, 1);
+        switch (xDt.DayOfWeek)
+        {
+            case DayOfWeek.Monday:
+                xI = 0;
+                break;
+            case DayOfWeek.Tuesday:
+                xI = 1;
+                break;
+            case DayOfWeek.Wednesday:
+                xI = 2;
+                break;
+            case DayOfWeek.Thursday:
+                xI = 3;
+                break;
+            case DayOfWeek.Friday:
+                xI = 4;
+                break;
+            case DayOfWeek.Saturday:
+                xI = 5;
+                break;
+            case DayOfWeek.Sunday:
+                xI = 6;
+                break;
+        }
+        while (xDt.Month == jpBag.SelectedDate.Month)
+        {
+            jpBag.Days[xI].Description = xDt.Day.ToString();
+            jpBag.Days[xI].Value = xDt.Day;
+            if (xDt.Date == jpBag.SelectedDate.Date)
+                jpBag.Days[xI].IsSelected = true;
+            xI++;
+            xDt = xDt.AddDays(1);
+        }
+        
+    }
+
+    private void SetMinute(int min)
+    {
+        var xD = jpBag.SelectedDate;
+        jpBag.SelectedDate = new DateTime(xD.Year, xD.Month, xD.Day, xD.Hour, min, IsDateTo ? 59 :0 );
+        FormatSelectedDate();
+    }
+
+    private void SetHour(int hour)
+    {
+        var xD = jpBag.SelectedDate;
+        jpBag.SelectedDate = new DateTime(xD.Year, xD.Month, xD.Day,(hour==12)? hour- jpPM : hour+jpPM, xD.Minute, IsDateTo ? 59 :0);
+        FormatSelectedDate();
+    }
+
+    private void SetDate(Bag_DateTimeInput.Day day)
+    {
+        var xD = jpBag.SelectedDate;
+        jpBag.SelectedDate = new DateTime(xD.Year, xD.Month, day.Value, xD.Hour, xD.Minute, IsDateTo ? 59 :0);
+        FormatSelectedDate();
+    }
+
+    private void FormatSelectedDate()
+    {
+        this.Text = jpBag.SelectedDate.ToString("dd. MM. yyyy  HH:mm:ss");
+        StateHasChanged();
+    }
+
+    private string GetStyleHour(int hour)
+    {
+        if (jpBag.SelectedDate.Hour == hour+jpPM) return " btnSel";
+        return "";
+    }
+    private string GetStyleMin(int min)
+    {
+        if (jpBag.SelectedDate.Minute == min) return " btnSel";
+        return "";
+    }
+    private string GetStyleDay(Bag_DateTimeInput.Day day)
+    {
+        var xC = "";
+        if (day.Value < 1) return xC;
+        if (jpBag.SelectedDate.Day == day.Value) xC = xC + " btnSel";
+        var xD = new DateTime(jpBag.SelectedDate.Year, jpBag.SelectedDate.Month, day.Value);
+        if (xD.DayOfWeek == DayOfWeek.Saturday) xC = xC + " w3-text-yellow";
+        if (xD.DayOfWeek == DayOfWeek.Sunday) xC = xC + " w3-text-red";
+        return xC;
+    }
+
+
+
+}

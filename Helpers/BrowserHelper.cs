@@ -36,6 +36,22 @@ namespace Jelineksoft.BlazorLibrary.Helpers
         {
             await xJs.InvokeVoidAsync("focusInputFromBlazor", new[] { className });
         }
+
+        public async void PlaySound(int index)
+        {
+            if ((index == 0) || (index == 1))
+            {
+                await xJs.InvokeAsync<string>("PlaySound", null); // this calls "window.PlaySound()"                
+            }
+            if (index == 2)
+            {
+                await xJs.InvokeAsync<string>("PlaySound2", null); // this calls "window.PlaySound()"                
+            }
+            if (index == 3)
+            {
+                await xJs.InvokeAsync<string>("PlaySound3", null); // this calls "window.PlaySound()"                
+            }
+        }
   
     }
 

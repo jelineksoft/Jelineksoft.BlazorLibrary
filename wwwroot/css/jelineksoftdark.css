@@ -395,3 +395,50 @@ img {
   background-color: #383838;
   color: white;
 }
+.jelineksoft-datetime {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 2px;
+}
+.jelineksoft-datetime-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.jelineksoft-datetime-label {
+  clear: both;
+  float: none;
+  display: inline-block;
+  padding: 2px;
+}
+.jelineksoft-datetime-input {
+  width: 100%;
+}
+.jelineksoft-datetime-button {
+  width: auto;
+}
+.jelineksoft-datetime-dropdown {
+  display: block;
+  left: 0;
+  right: 0;
+  min-width: 6em;
+  height: auto;
+  box-shadow: 0px 8px 16px 0px rgba(255, 255, 255, 0.5);
+  z-index: 0;
+  border: solid 2x silver;
+  width: 100%;
+}
+.jelineksoft-datetime-isopen {
+  display: block;
+}
+.jelineksoft-datetime-isclose {
+  display: none;
+}
+.jelineksoft-datetime-dropdown:hover .jelineksoft-datetime-dropdown {
+  display: block;
+}
+.jelineksoft-datetime-dropdown {
+  background-color: #383838;
+  color: white;
+}
